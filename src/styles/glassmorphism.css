@@ -1,0 +1,137 @@
+/**
+ * Glassmorphism Utilities for MandiMind
+ * India's 77th Republic Day Special
+ * 
+ * This file provides pre-built glassmorphism utility classes
+ * that combine backdrop blur, transparency, and borders for
+ * a modern glass effect with tricolor theme integration.
+ */
+
+@layer components {
+  /* Base Glass Card Styles */
+  .glass-card {
+    @apply bg-glass-white backdrop-blur-lg border border-glass-white rounded-lg shadow-glass;
+  }
+
+  .glass-card-light {
+    @apply bg-glass-white-light backdrop-blur-md border border-glass-white-light rounded-lg shadow-glass-sm;
+  }
+
+  .glass-card-heavy {
+    @apply bg-glass-white backdrop-blur-xl border border-glass-white rounded-xl shadow-glass-lg;
+  }
+
+  /* Tricolor Glass Cards */
+  .glass-card-saffron {
+    @apply bg-glass-saffron backdrop-blur-lg border border-glass-saffron rounded-lg shadow-glass-saffron;
+  }
+
+  .glass-card-green {
+    @apply bg-glass-green backdrop-blur-lg border border-glass-green rounded-lg shadow-glass-green;
+  }
+
+  .glass-card-navy {
+    @apply bg-glass-navy backdrop-blur-lg border border-glass-navy rounded-lg shadow-glass-navy;
+  }
+
+  /* Glass Buttons */
+  .glass-button {
+    @apply bg-glass-white backdrop-blur-md border border-glass-white rounded-lg px-4 py-2 
+           transition-all duration-300 hover:bg-glass-white-light hover:shadow-glass;
+  }
+
+  .glass-button-saffron {
+    @apply bg-glass-saffron-medium backdrop-blur-md border border-glass-saffron rounded-lg px-4 py-2
+           transition-all duration-300 hover:bg-glass-saffron-heavy hover:shadow-glass-saffron;
+  }
+
+  .glass-button-green {
+    @apply bg-glass-green-medium backdrop-blur-md border border-glass-green rounded-lg px-4 py-2
+           transition-all duration-300 hover:bg-glass-green-heavy hover:shadow-glass-green;
+  }
+
+  /* Glass Input Fields */
+  .glass-input {
+    @apply bg-glass-white-light backdrop-blur-md border border-glass-white rounded-lg px-4 py-2
+           focus:bg-glass-white focus:border-glass-white focus:outline-none focus:ring-2 focus:ring-glass-white;
+  }
+
+  /* Glass Headers with Tricolor */
+  .glass-header-tricolor {
+    @apply bg-glass-tricolor backdrop-blur-xl border-b border-glass-white shadow-glass-lg;
+  }
+
+  /* Glass Badges */
+  .glass-badge {
+    @apply bg-glass-white-lighter backdrop-blur-sm border border-glass-white-lighter rounded-full px-3 py-1 text-sm;
+  }
+
+  .glass-badge-saffron {
+    @apply bg-glass-saffron backdrop-blur-sm border border-glass-saffron-light rounded-full px-3 py-1 text-sm;
+  }
+
+  .glass-badge-green {
+    @apply bg-glass-green backdrop-blur-sm border border-glass-green-light rounded-full px-3 py-1 text-sm;
+  }
+
+  /* Glass Overlays */
+  .glass-overlay {
+    @apply bg-glass-dark-medium backdrop-blur-2xl;
+  }
+
+  .glass-overlay-light {
+    @apply bg-glass-dark backdrop-blur-lg;
+  }
+
+  /* Glass Panels with Gradient Backgrounds */
+  .glass-panel-saffron {
+    @apply bg-glass-saffron-gradient backdrop-blur-xl border border-glass-saffron rounded-xl shadow-glass-saffron;
+  }
+
+  .glass-panel-green {
+    @apply bg-glass-green-gradient backdrop-blur-xl border border-glass-green rounded-xl shadow-glass-green;
+  }
+
+  .glass-panel-navy {
+    @apply bg-glass-navy-gradient backdrop-blur-xl border border-glass-navy rounded-xl shadow-glass-navy;
+  }
+
+  /* Hover Effects */
+  .glass-hover {
+    @apply transition-all duration-300 hover:backdrop-blur-xl hover:shadow-glass-lg;
+  }
+
+  .glass-hover-saffron {
+    @apply transition-all duration-300 hover:bg-glass-saffron-medium hover:shadow-glass-saffron;
+  }
+
+  .glass-hover-green {
+    @apply transition-all duration-300 hover:bg-glass-green-medium hover:shadow-glass-green;
+  }
+
+  /* Republic Day Special - 77th Anniversary Glass Effects */
+  .glass-republic-day {
+    @apply bg-glass-tricolor backdrop-blur-2xl border border-glass-white rounded-2xl shadow-glass-lg
+           relative overflow-hidden;
+  }
+
+  .glass-republic-day::before {
+    content: '';
+    @apply absolute inset-0 bg-tricolor-diagonal opacity-10 pointer-events-none;
+  }
+}
+
+@layer utilities {
+  /* Utility Classes for Custom Combinations */
+  .backdrop-glass {
+    @apply backdrop-blur-lg backdrop-saturate-150;
+  }
+
+  .backdrop-glass-heavy {
+    @apply backdrop-blur-2xl backdrop-saturate-200;
+  }
+
+  .backdrop-glass-light {
+    @apply backdrop-blur-md backdrop-saturate-100;
+  }
+}
