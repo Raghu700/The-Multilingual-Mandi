@@ -11,9 +11,10 @@ import { t } from '../data/translations';
 interface ContextFormProps {
   onSubmit: (context: NegotiationContext) => void;
   loading?: boolean;
+  disabled?: boolean;
 }
 
-export function ContextForm({ onSubmit, loading = false }: ContextFormProps) {
+export function ContextForm({ onSubmit, loading = false, disabled = false }: ContextFormProps) {
   const { appLanguage } = useLanguage();
   const [product, setProduct] = useState('');
   const [askingPrice, setAskingPrice] = useState('');
@@ -86,13 +87,14 @@ export function ContextForm({ onSubmit, loading = false }: ContextFormProps) {
             value={product}
             onChange={(e) => setProduct(e.target.value)}
             placeholder={t('placeholder.productExample', appLanguage)}
+            disabled={loading || disabled}
             className={`
               w-full px-4 py-3 rounded-lg glass-card border-2
               ${errors.product ? 'border-red-500' : 'border-transparent'}
+              ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}
               focus:outline-none focus:ring-2 focus:ring-saffron
               text-navy-blue font-semibold
             `}
-            disabled={loading}
           />
           {errors.product && (
             <p className="text-red-600 text-sm mt-2">{errors.product}</p>
@@ -111,13 +113,14 @@ export function ContextForm({ onSubmit, loading = false }: ContextFormProps) {
             placeholder={t('placeholder.priceExample', appLanguage)}
             min="0"
             step="0.01"
+            disabled={loading || disabled}
             className={`
               w-full px-4 py-3 rounded-lg glass-card border-2
               ${errors.askingPrice ? 'border-red-500' : 'border-transparent'}
+              ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}
               focus:outline-none focus:ring-2 focus:ring-saffron
               text-navy-blue font-semibold
             `}
-            disabled={loading}
           />
           {errors.askingPrice && (
             <p className="text-red-600 text-sm mt-2">{errors.askingPrice}</p>
@@ -136,13 +139,14 @@ export function ContextForm({ onSubmit, loading = false }: ContextFormProps) {
             placeholder={t('placeholder.priceExample', appLanguage)}
             min="0"
             step="0.01"
+            disabled={loading || disabled}
             className={`
               w-full px-4 py-3 rounded-lg glass-card border-2
               ${errors.buyerOffer ? 'border-red-500' : 'border-transparent'}
+              ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}
               focus:outline-none focus:ring-2 focus:ring-saffron
               text-navy-blue font-semibold
             `}
-            disabled={loading}
           />
           {errors.buyerOffer && (
             <p className="text-red-600 text-sm mt-2">{errors.buyerOffer}</p>
@@ -161,13 +165,14 @@ export function ContextForm({ onSubmit, loading = false }: ContextFormProps) {
             placeholder={t('placeholder.quantityExample', appLanguage)}
             min="0"
             step="0.01"
+            disabled={loading || disabled}
             className={`
               w-full px-4 py-3 rounded-lg glass-card border-2
               ${errors.quantity ? 'border-red-500' : 'border-transparent'}
+              ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}
               focus:outline-none focus:ring-2 focus:ring-saffron
               text-navy-blue font-semibold
             `}
-            disabled={loading}
           />
           {errors.quantity && (
             <p className="text-red-600 text-sm mt-2">{errors.quantity}</p>
@@ -177,12 +182,12 @@ export function ContextForm({ onSubmit, loading = false }: ContextFormProps) {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || disabled}
           className={`
             w-full px-6 py-4 rounded-lg font-bold text-white
             transition-all duration-300
             ${
-              loading
+              loading || disabled
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-saffron hover:bg-saffron/90 hover:scale-105 shadow-lg'
             }
@@ -193,6 +198,8 @@ export function ContextForm({ onSubmit, loading = false }: ContextFormProps) {
               <span className="animate-spin">⏳</span>
               {t('negotiation.generatingStrategies', appLanguage)}
             </span>
+          ) : disabled ? (
+            'Enable AI to Generate Strategies'
           ) : (
             t('negotiation.generateStrategies', appLanguage)
           )}

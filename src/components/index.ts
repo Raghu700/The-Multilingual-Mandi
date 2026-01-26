@@ -21,6 +21,9 @@ export { PriceDiscoveryTab } from './PriceDiscoveryTab';
 export { CommoditySelector } from './CommoditySelector';
 export { PriceCard } from './PriceCard';
 export { PriceCalculator } from './PriceCalculator';
+export { MarketInsights } from './MarketInsights';
+export { PricePredictionComponent } from './PricePrediction';
+export { SmartPriceRecommendationComponent } from './SmartPriceRecommendation';
 
 // Negotiation Module
 export { NegotiationTab } from './NegotiationTab';

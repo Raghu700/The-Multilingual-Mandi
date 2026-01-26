@@ -1,9 +1,10 @@
 /**
  * Price Discovery Service
- * Handles price data generation, calculations, and formatting
+ * Handles price data generation, calculations, and AI-powered predictions
  */
 
 import { Commodity, getAllCommodities } from '../data/commodities';
+import { generatePricePrediction, generateMarketInsights, generatePriceRecommendation, MarketInsight, PricePrediction, SmartPriceRecommendation } from './aiService';
 
 export interface PriceData {
   commodity: Commodity;
@@ -12,6 +13,9 @@ export interface PriceData {
   maxPrice: number;
   trend: 'up' | 'down' | 'stable';
   lastUpdated: number;
+  prediction?: PricePrediction;
+  insights?: MarketInsight[];
+  recommendation?: SmartPriceRecommendation;
 }
 
 export interface PriceCalculation {
@@ -65,16 +69,65 @@ export function getPriceData(commodity: Commodity): PriceData {
 }
 
 /**
- * Calculate total price: quantity × price
+ * Generate enhanced price data with AI predictions and insights
+ * Includes market analysis and smart recommendations
  */
-export function calculateTotal(
-  quantity: number,
-  pricePerUnit: number
-): number {
-  if (quantity <= 0 || pricePerUnit < 0) {
-    return 0;
+export async function getEnhancedPriceData(
+  commodity: Commodity,
+  includeAI: boolean = true
+): Promise<PriceData> {
+  const baseData = getPriceData(commodity);
+  
+  if (!includeAI) {
+    return baseData;
   }
-  return Math.round(quantity * pricePerUnit * 100) / 100; // Round to 2 decimals
+
+  try {
+    // Generate AI-powered enhancements in parallel
+    const [prediction, insights, recommendation] = await Promise.all([
+      generatePricePrediction(commodity, '1week'),
+      generateMarketInsights(commodity),
+      generatePriceRecommendation(commodity, 50) // Default quantity for recommendation
+    ]);
+
+    return {
+      ...baseData,
+      prediction,
+      insights,
+      recommendation
+    };
+  } catch (error) {
+    console.error('AI enhancement failed, returning basic data:', error);
+    return baseData;
+  }
+}
+
+/**
+ * Get price prediction for specific timeframe
+ */
+export async function getPricePrediction(
+  commodity: Commodity,
+  timeframe: '1day' | '1week' | '1month' = '1week'
+): Promise<PricePrediction> {
+  return generatePricePrediction(commodity, timeframe);
+}
+
+/**
+ * Get market insights for commodity
+ */
+export async function getMarketInsights(commodity: Commodity): Promise<MarketInsight[]> {
+  return generateMarketInsights(commodity);
+}
+
+/**
+ * Get smart pricing recommendation
+ */
+export async function getPriceRecommendation(
+  commodity: Commodity,
+  quantity: number,
+  targetMargin: number = 15
+): Promise<SmartPriceRecommendation> {
+  return generatePriceRecommendation(commodity, quantity, targetMargin);
 }
 
 /**
@@ -207,4 +260,16 @@ export function createPriceCalculation(
     commodity,
     priceType,
   };
+}
+/**
+ * Calculate total price: quantity × price
+ */
+export function calculateTotal(
+  quantity: number,
+  pricePerUnit: number
+): number {
+  if (quantity <= 0 || pricePerUnit < 0) {
+    return 0;
+  }
+  return Math.round(quantity * pricePerUnit * 100) / 100; // Round to 2 decimals
 }

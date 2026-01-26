@@ -5,6 +5,7 @@
 
 import { Language } from '../types';
 import { getAllTips, NegotiationTip } from '../data/negotiationTips';
+import { generateAINegotiationStrategies } from './aiService';
 
 export interface NegotiationContext {
   product: string;
@@ -54,8 +55,7 @@ export function validateContext(context: NegotiationContext): {
 
 /**
  * Generate AI-powered negotiation strategies
- * Currently returns mock strategies since we don't have Claude API key
- * In production, this would call Claude API
+ * Uses advanced AI analysis for contextual strategies
  */
 export async function generateStrategies(
   context: NegotiationContext
@@ -66,47 +66,59 @@ export async function generateStrategies(
     throw new Error(`Invalid context: ${validation.errors.join(', ')}`);
   }
 
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  try {
+    // Use AI service for intelligent strategy generation
+    const strategies = await generateAINegotiationStrategies(context);
+    return strategies;
+  } catch (error) {
+    console.error('AI strategy generation failed, using fallback:', error);
+    
+    // Fallback to enhanced mock strategies
+    return generateFallbackStrategies(context);
+  }
+}
 
-  // Mock AI-generated strategies
-  // In production, this would call Claude API with a prompt template
+/**
+ * Enhanced fallback strategies with better context awareness
+ */
+function generateFallbackStrategies(context: NegotiationContext): NegotiationStrategy[] {
   const priceDifference = context.askingPrice - context.buyerOffer;
   const percentageDiff = (priceDifference / context.askingPrice) * 100;
+  const totalValue = context.askingPrice * context.quantity;
 
   const strategies: NegotiationStrategy[] = [
     {
       id: 'strategy-1',
-      title: 'Meet in the Middle',
-      description: `The buyer's offer is ${percentageDiff.toFixed(1)}% below your asking price. Consider meeting halfway to close the deal quickly.`,
+      title: 'Smart Compromise Strategy',
+      description: `With a ${percentageDiff.toFixed(1)}% price gap, find middle ground while maintaining value perception. Total deal worth ₹${totalValue.toLocaleString()}.`,
       actionPoints: [
         `Counter-offer at ₹${Math.round((context.askingPrice + context.buyerOffer) / 2)} per unit`,
         'Emphasize the quality and freshness of your product',
         'Mention that this is a special price for today only',
-        'Ask if they can commit to the full quantity',
+        'Ask if they can commit to the full quantity immediately',
       ],
     },
     {
       id: 'strategy-2',
-      title: 'Volume Discount Approach',
-      description: 'Offer a better price if the buyer increases their quantity. This maintains your profit margin while securing a larger sale.',
+      title: 'Volume Incentive Approach',
+      description: 'Leverage quantity to create win-win scenario. Maintain margins while offering value for larger commitments.',
       actionPoints: [
         `Keep your asking price of ₹${context.askingPrice} for current quantity`,
-        `Offer ₹${Math.round(context.askingPrice * 0.95)} if they double the quantity`,
+        `Offer ₹${Math.round(context.askingPrice * 0.95)} if they increase quantity by 50%`,
         'Highlight the savings they get with bulk purchase',
-        'Mention limited availability to create urgency',
+        'Create urgency by mentioning limited stock availability',
       ],
     },
     {
       id: 'strategy-3',
-      title: 'Quality Justification',
-      description: 'Stand firm on your price by emphasizing the superior quality and value of your product.',
+      title: 'Value Demonstration Strategy',
+      description: 'Stand firm on pricing by clearly demonstrating superior value proposition and market positioning.',
       actionPoints: [
-        `Maintain your asking price of ₹${context.askingPrice}`,
-        'Show examples of market rates for similar quality products',
-        'Explain your growing/sourcing methods that ensure quality',
-        'Offer a small sample to demonstrate quality',
-        'Suggest payment terms if price is the main concern',
+        `Maintain your asking price of ₹${context.askingPrice} with confidence`,
+        'Compare with market rates for similar quality products',
+        'Explain your quality standards and sourcing methods',
+        'Offer quality guarantee or small sample for verification',
+        'Suggest flexible payment terms if price is the concern',
       ],
     },
   ];
