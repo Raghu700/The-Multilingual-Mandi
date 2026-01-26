@@ -5,7 +5,9 @@
 [![Republic Day](https://img.shields.io/badge/26%20January%202026-77th%20Republic%20Day-FF9933?style=for-the-badge&labelColor=138808)](https://en.wikipedia.org/wiki/Republic_Day_(India))
 [![Made with ❤️ for Bharat](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F%20for-Bharat-orange?style=for-the-badge)](https://github.com)
 
-> **🎥 [Watch Demo Video](./EktaMandiDemo.mp4)** - See the platform in action!
+> **🎥 [Watch Demo Video on YouTube](https://youtu.be/7CtHhV3Krqc)** - See the platform in action!
+> 
+> *([Download local video file](./EktaMandiDemo.mp4))*
 
 ---
 
@@ -208,9 +210,9 @@ matchScore = f(priceCompatibility, quantityMatch, distance, rating)
 
 ---
 
-## � Demo Video Guide
-
-**[EktaMandiDemo.mp4](./EktaMandiDemo.mp4)** showcases:
+## 🎥 Demo Video Guide
+    
+**[Watch on YouTube](https://youtu.be/7CtHhV3Krqc)** showcases:
 
 1. **0:00-0:15** - App overview, Ashoka Chakra logo, language switching
 2. **0:15-0:45** - Price Discovery tab (market prices, AI predictions)
