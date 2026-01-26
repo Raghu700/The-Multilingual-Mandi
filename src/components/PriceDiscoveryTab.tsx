@@ -47,42 +47,48 @@ export function PriceDiscoveryTab() {
   }, [commodities, selectedCommodity]);
 
   return (
-    <div className="space-y-8">
-      {/* Commodity Selector */}
-      <CommoditySelector
-        commodities={commodities}
-        selectedCommodity={selectedCommodity}
-        onCommoditySelect={handleCommoditySelect}
-        language={appLanguage}
-      />
+    <div className="flex flex-col lg:flex-row gap-6 h-full">
+      {/* Left Column: Commodity List */}
+      <div className="w-full lg:w-1/3 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
+        <CommoditySelector
+          commodities={commodities}
+          selectedCommodity={selectedCommodity}
+          onCommoditySelect={handleCommoditySelect}
+          language={appLanguage}
+        />
+      </div>
 
-      {/* Price Display and Calculator */}
-      {selectedCommodity && priceData && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Price Card */}
-          <div>
+      {/* Right Column: Price Card + Calculator */}
+      <div className="w-full lg:w-2/3 space-y-6">
+        {selectedCommodity && priceData ? (
+          <>
+            {/* Price Card */}
             <PriceCard
               priceData={priceData}
               onPriceSelect={handlePriceSelect}
             />
-          </div>
 
-          {/* Price Calculator */}
-          <div>
+            {/* Price Calculator */}
             <PriceCalculator
               commodity={selectedCommodity}
               priceData={priceData}
               initialPriceType={selectedPriceType}
             />
-          </div>
-        </div>
-      )}
 
-      {/* Info Section */}
-      <div className="glass-card-light p-6 text-center">
-        <p className="text-sm text-gray-600">
-          💡 {t('price.tip', appLanguage)}
-        </p>
+            {/* Info Section */}
+            <div className="glass-card-light p-4 text-center">
+              <p className="text-sm text-gray-600">
+                💡 {t('price.tip', appLanguage)}
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="glass-card p-12 text-center">
+            <p className="text-gray-500">
+              {t('price.selectCommodity', appLanguage)}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

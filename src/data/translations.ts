@@ -42,6 +42,13 @@ export const UI_TRANSLATIONS: Record<string, Record<Language, string>> = {
     ta: '26 ஜனவரி 2026',
     bn: '২৬ জানুয়ারি ২০২৬'
   },
+  'header.selectLanguage': {
+    en: 'Select Language',
+    hi: 'भाषा चुनें',
+    te: 'భాషను ఎంచుకోండి',
+    ta: 'மொழியைத் தேர்ந்தெடுக்கவும்',
+    bn: 'ভাষা নির্বাচন করুন'
+  },
 
   // Footer
   'footer.message': {
