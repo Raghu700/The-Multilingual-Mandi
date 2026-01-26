@@ -499,6 +499,99 @@ export const UI_TRANSLATIONS: Record<string, Record<Language, string>> = {
     te: 'విశ్వాసంతో చర్చలు జరపండి',
     ta: 'நம்பிக்கையுடன் பேச்சுவார்த்தை நடத்துங்கள்',
     bn: 'আত্মবিশ্বাসের সাথে আলোচনা করুন'
+  },
+
+  // AI Features
+  'ai.enabled': {
+    en: 'AI Enabled',
+    hi: 'AI सक्रिय',
+    te: 'AI ఆన్',
+    ta: 'AI இயக்கம்',
+    bn: 'AI সক্রিয়'
+  },
+  'ai.prediction': {
+    en: 'Price Prediction',
+    hi: 'मूल्य भविष्यवाणी',
+    te: 'ధర అంచనా',
+    ta: 'விலை கணிப்பு',
+    bn: 'মূল্য পূর্বাভাস'
+  },
+  'ai.insights': {
+    en: 'Market Insights',
+    hi: 'बाजार जानकारी',
+    te: 'మార్కెట్ సమాచారం',
+    ta: 'சந்தை தகவல்',
+    bn: 'বাজার তথ্য'
+  },
+  'ai.currentPrice': {
+    en: 'Current',
+    hi: 'वर्तमान',
+    te: 'ప్రస్తుత',
+    ta: 'தற்போதைய',
+    bn: 'বর্তমান'
+  },
+  'ai.predictedPrice': {
+    en: 'Predicted',
+    hi: 'अनुमानित',
+    te: 'అంచనా',
+    ta: 'கணிப்பு',
+    bn: 'অনুমানিত'
+  },
+  'ai.expectedChange': {
+    en: 'Change',
+    hi: 'परिवर्तन',
+    te: 'మార్పు',
+    ta: 'மாற்றம்',
+    bn: 'পরিবর্তন'
+  },
+  'ai.confidence': {
+    en: 'Confidence',
+    hi: 'विश्वसनीयता',
+    te: 'విశ్వసనీయత',
+    ta: 'நம்பகத்தன்மை',
+    bn: 'নির্ভরযোগ্যতা'
+  },
+  'ai.high': {
+    en: 'High',
+    hi: 'उच्च',
+    te: 'అధిక',
+    ta: 'அதிக',
+    bn: 'উচ্চ'
+  },
+  'ai.medium': {
+    en: 'Medium',
+    hi: 'मध्यम',
+    te: 'మధ్యస్థ',
+    ta: 'நடுத்தர',
+    bn: 'মাঝারি'
+  },
+  'ai.low': {
+    en: 'Low',
+    hi: 'कम',
+    te: 'తక్కువ',
+    ta: 'குறைவு',
+    bn: 'কম'
+  },
+  'ai.nextWeek': {
+    en: 'Next Week',
+    hi: 'अगला सप्ताह',
+    te: 'వచ్చే వారం',
+    ta: 'அடுத்த வாரம்',
+    bn: 'পরের সপ্তাহ'
+  },
+  'ai.upwardTrend': {
+    en: 'Upward Trend',
+    hi: 'बढ़ती प्रवृत्ति',
+    te: 'పెరుగుతున్న ధోరణి',
+    ta: 'உயர்வு போக்கு',
+    bn: 'ঊর্ধ্বমুখী প্রবণতা'
+  },
+  'ai.seasonalFactor': {
+    en: 'Seasonal',
+    hi: 'मौसमी',
+    te: 'సీజనల్',
+    ta: 'பருவகால',
+    bn: 'মৌসুমী'
   }
 };
 

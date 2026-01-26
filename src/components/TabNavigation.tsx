@@ -1,11 +1,6 @@
 /**
- * TabNavigation Component
- * India's 77th Republic Day Special - 26 January 2026
- * 
- * Provides tab-based navigation for the three main modules:
- * - Translation (Unity in Diversity 🇮🇳)
- * - Price Discovery (Digital India 🚀)
- * - Negotiation (Atmanirbhar Bharat 💪)
+ * TabNavigation Component - Polished
+ * Clean tabs with smooth transitions
  */
 
 import { useState } from 'react';
@@ -15,85 +10,44 @@ import { t } from '../data/translations';
 import { PriceDiscoveryTab } from './PriceDiscoveryTab';
 import { NegotiationTab } from './NegotiationTab';
 
-interface Tab {
-  id: string;
-  labelKey: string;
-  icon: React.ReactNode;
-  badgeKey: string;
-  content: React.ReactNode;
-}
-
-interface TabNavigationProps {
-  children?: React.ReactNode;
-}
-
-export function TabNavigation({ children }: TabNavigationProps) {
+export function TabNavigation() {
   const [activeTab, setActiveTab] = useState('price-discovery');
   const { appLanguage } = useLanguage();
 
-  const tabs: Tab[] = [
-    {
-      id: 'price-discovery',
-      labelKey: 'tab.priceDiscovery',
-      icon: <TrendingUp className="w-5 h-5" />,
-      badgeKey: 'badge.priceDiscovery',
-      content: <PriceDiscoveryTab />,
-    },
-    {
-      id: 'negotiation',
-      labelKey: 'tab.negotiation',
-      icon: <Users className="w-5 h-5" />,
-      badgeKey: 'badge.negotiation',
-      content: <NegotiationTab />,
-    },
+  const tabs = [
+    { id: 'price-discovery', labelKey: 'tab.priceDiscovery', icon: TrendingUp },
+    { id: 'negotiation', labelKey: 'tab.negotiation', icon: Users },
   ];
 
-  const activeTabData = tabs.find(tab => tab.id === activeTab);
-
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4 py-8">
-      {/* Tab Navigation Bar */}
-      <div className="glass-card mb-6 p-2">
-        <div className="flex flex-col sm:flex-row gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg
-                transition-all duration-300 font-semibold
-                ${
-                  activeTab === tab.id
-                    ? 'bg-saffron text-white shadow-lg scale-105'
-                    : 'glass-button text-navy-blue hover:bg-glass-white-light'
-                }
-              `}
-            >
-              {tab.icon}
-              <span className="hidden sm:inline">{t(tab.labelKey, appLanguage)}</span>
-              <span className="sm:hidden text-sm">{t(tab.labelKey, appLanguage).split(' ')[0]}</span>
-            </button>
-          ))}
+    <div className="w-full max-w-4xl mx-auto px-4 py-6">
+      {/* Tab Buttons */}
+      <div className="flex justify-center mb-6">
+        <div className="inline-flex bg-slate-100 rounded-xl p-1">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm transition-all ${activeTab === tab.id
+                    ? 'bg-orange-500 text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-800'
+                  }`}
+              >
+                <Icon className="w-4 h-4" />
+                {t(tab.labelKey, appLanguage)}
+              </button>
+            );
+          })}
         </div>
       </div>
-
-      {/* Active Tab Badge */}
-      {activeTabData && (
-        <div className="flex justify-center mb-6">
-          <div className="glass-badge-saffron text-saffron font-semibold px-4 py-2">
-            {t(activeTabData.badgeKey, appLanguage)}
-          </div>
-        </div>
-      )}
 
       {/* Tab Content */}
-      <div className="glass-card p-6 min-h-[500px] animate-fadeIn">
-        {activeTabData?.content}
+      <div key={activeTab} className="animate-fadeIn">
+        {activeTab === 'price-discovery' && <PriceDiscoveryTab />}
+        {activeTab === 'negotiation' && <NegotiationTab />}
       </div>
-
-      {/* Optional children (for future extensions) */}
-      {children}
     </div>
   );
 }
-

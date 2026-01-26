@@ -27,6 +27,7 @@ export { SmartPriceRecommendationComponent } from './SmartPriceRecommendation';
 
 // Negotiation Module
 export { NegotiationTab } from './NegotiationTab';
+export { NegotiationRoom } from './NegotiationRoom';
 export { ContextForm } from './ContextForm';
 export { StrategyList } from './StrategyList';
 export { QuickTips } from './QuickTips';

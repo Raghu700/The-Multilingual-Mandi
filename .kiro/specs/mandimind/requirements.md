@@ -1,4 +1,4 @@
-# Requirements Document: MandiMind Exchange (Enhanced)
+# Requirements Document: MandiMind Exchange
 
 ## Introduction
 

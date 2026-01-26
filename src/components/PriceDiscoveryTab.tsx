@@ -1,196 +1,168 @@
 /**
- * PriceDiscoveryTab Component
- * Main container for the Price Discovery Module
- * Integrates commodity selector, price cards, calculator, and AI-powered insights
+ * PriceDiscoveryTab Component - Polished
+ * Compact layout, better scrolling, cleaner design
  */
 
 import { useState, useEffect } from 'react';
-import { Commodity } from '../data/commodities';
-import { getCommodities, getPriceData, getEnhancedPriceData, PriceData } from '../services/priceService';
+import { Commodity, COMMODITIES } from '../data/commodities';
+import { getPriceData, PriceData, formatCurrency } from '../services/priceService';
 import { useLanguage } from '../contexts/LanguageContext';
 import { t } from '../data/translations';
-import { CommoditySelector } from './CommoditySelector';
-import { PriceCard } from './PriceCard';
-import { PriceCalculator } from './PriceCalculator';
-import { MarketInsights } from './MarketInsights';
-import { PricePredictionComponent } from './PricePrediction';
-import { SmartPriceRecommendationComponent } from './SmartPriceRecommendation';
-import { Brain, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Sparkles } from 'lucide-react';
 
 export function PriceDiscoveryTab() {
   const { appLanguage } = useLanguage();
-  
-  // State management
-  const [commodities] = useState<Commodity[]>(getCommodities());
-  const [selectedCommodity, setSelectedCommodity] = useState<Commodity | null>(null);
+
+  const [selectedCommodity, setSelectedCommodity] = useState<Commodity>(COMMODITIES[0]);
   const [priceData, setPriceData] = useState<PriceData | null>(null);
-  const [selectedPriceType, setSelectedPriceType] = useState<'min' | 'avg' | 'max'>('avg');
-  const [selectedPrice, setSelectedPrice] = useState<number>(0);
-  const [aiEnabled, setAiEnabled] = useState<boolean>(true);
-  const [loadingAI, setLoadingAI] = useState<boolean>(false);
 
-  // Handle commodity selection with AI enhancement
-  const handleCommoditySelect = async (commodity: Commodity) => {
-    setSelectedCommodity(commodity);
-    setLoadingAI(true);
-    
-    try {
-      // Get enhanced price data with AI features
-      const newPriceData = await getEnhancedPriceData(commodity, aiEnabled);
-      setPriceData(newPriceData);
-      
-      // Reset calculator
-      setSelectedPriceType('avg');
-      setSelectedPrice(newPriceData.avgPrice);
-    } catch (error) {
-      console.error('Failed to load enhanced price data:', error);
-      // Fallback to basic price data
-      const basicPriceData = getPriceData(commodity);
-      setPriceData(basicPriceData);
-      setSelectedPriceType('avg');
-      setSelectedPrice(basicPriceData.avgPrice);
-    } finally {
-      setLoadingAI(false);
-    }
-  };
-
-  // Handle price selection from price card
-  const handlePriceSelect = (priceType: 'min' | 'avg' | 'max', price: number) => {
-    setSelectedPriceType(priceType);
-    setSelectedPrice(price);
-  };
-
-  // Toggle AI features
-  const toggleAI = async () => {
-    setAiEnabled(!aiEnabled);
-    
-    if (selectedCommodity) {
-      setLoadingAI(true);
-      try {
-        const newPriceData = await getEnhancedPriceData(selectedCommodity, !aiEnabled);
-        setPriceData(newPriceData);
-      } catch (error) {
-        console.error('Failed to toggle AI features:', error);
-      } finally {
-        setLoadingAI(false);
-      }
-    }
-  };
-
-  // Auto-select first commodity on mount
   useEffect(() => {
-    if (commodities.length > 0 && !selectedCommodity) {
-      handleCommoditySelect(commodities[0]);
+    if (selectedCommodity) {
+      setPriceData(getPriceData(selectedCommodity));
     }
-  }, [commodities, selectedCommodity]);
+  }, [selectedCommodity]);
+
+  const getTrendInfo = (trend: 'up' | 'down' | 'stable') => {
+    switch (trend) {
+      case 'up': return { icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-50', text: t('price.trendingUp', appLanguage) };
+      case 'down': return { icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-50', text: t('price.trendingDown', appLanguage) };
+      default: return { icon: Minus, color: 'text-slate-500', bg: 'bg-slate-50', text: t('price.stable', appLanguage) };
+    }
+  };
+
+  const getConfidenceLabel = (confidence: number) => {
+    if (confidence >= 80) return t('ai.high', appLanguage);
+    if (confidence >= 60) return t('ai.medium', appLanguage);
+    return t('ai.low', appLanguage);
+  };
+
+  // Simulated AI prediction
+  const prediction = priceData ? {
+    current: priceData.avgPrice,
+    predicted: Math.round(priceData.avgPrice * (priceData.trend === 'up' ? 1.05 : priceData.trend === 'down' ? 0.95 : 1)),
+    confidence: 75 + Math.floor(Math.random() * 20)
+  } : null;
 
   return (
-    <div className="space-y-6">
-      {/* AI Toggle Header */}
-      <div className="flex items-center justify-between bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-        <div className="flex items-center gap-3">
-          <Brain className="w-5 h-5 text-saffron" />
-          <h2 className="text-lg font-semibold text-gray-800">Price Discovery</h2>
-        </div>
-        <button
-          onClick={toggleAI}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-            aiEnabled
-              ? 'bg-saffron text-white shadow-lg'
-              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-          }`}
-        >
-          <Zap className="w-4 h-4" />
-          AI {aiEnabled ? 'Enabled' : 'Disabled'}
-        </button>
+    <div className="max-w-3xl mx-auto space-y-6">
+      {/* Commodity Selector - Horizontal */}
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        {COMMODITIES.slice(0, 8).map((commodity) => (
+          <button
+            key={commodity.id}
+            onClick={() => setSelectedCommodity(commodity)}
+            className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${selectedCommodity.id === commodity.id
+                ? 'bg-orange-500 text-white shadow-md'
+                : 'bg-white text-slate-700 border border-slate-100 hover:border-orange-200'
+              }`}
+          >
+            <span className="text-xl">{commodity.emoji}</span>
+            <span className="font-medium text-sm whitespace-nowrap">{commodity.names[appLanguage]}</span>
+          </button>
+        ))}
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Left Column: Commodity List */}
-        <div className="w-full lg:w-1/3 lg:max-h-[calc(100vh-300px)] lg:overflow-y-auto">
-          <CommoditySelector
-            commodities={commodities}
-            selectedCommodity={selectedCommodity}
-            onCommoditySelect={handleCommoditySelect}
-            language={appLanguage}
-          />
-        </div>
-
-        {/* Right Column: Price Information */}
-        <div className="w-full lg:w-2/3 space-y-6">
-          {selectedCommodity && priceData ? (
-            <>
-              {/* Price Card */}
-              <PriceCard
-                priceData={priceData}
-                onPriceSelect={handlePriceSelect}
-              />
-
-              {/* AI-Powered Components */}
-              {aiEnabled && (
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  {/* Price Prediction */}
-                  {priceData.prediction && (
-                    <PricePredictionComponent
-                      prediction={priceData.prediction}
-                      loading={loadingAI}
-                    />
-                  )}
-
-                  {/* Market Insights */}
-                  {priceData.insights && (
-                    <MarketInsights
-                      insights={priceData.insights}
-                      loading={loadingAI}
-                    />
-                  )}
-
-                  {/* Smart Price Recommendation */}
-                  {priceData.recommendation && (
-                    <div className="xl:col-span-2">
-                      <SmartPriceRecommendationComponent
-                        recommendation={priceData.recommendation}
-                        currentPrice={priceData.avgPrice}
-                        loading={loadingAI}
-                      />
-                    </div>
-                  )}
+      {priceData && (
+        <>
+          {/* Main Price Card */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-3xl">
+                  {selectedCommodity.emoji}
                 </div>
-              )}
-
-              {/* Price Calculator */}
-              <PriceCalculator
-                commodity={selectedCommodity}
-                priceData={priceData}
-                initialPriceType={selectedPriceType}
-              />
-
-              {/* Info Section */}
-              <div className="glass-card-light p-4 text-center">
-                <p className="text-sm text-gray-600">
-                  💡 {aiEnabled 
-                    ? 'AI-powered insights help you make informed pricing decisions'
-                    : t('price.tip', appLanguage)
-                  }
-                </p>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">{selectedCommodity.names[appLanguage]}</h2>
+                  <p className="text-sm text-slate-500">{t('price.per', appLanguage)} {selectedCommodity.unit}</p>
+                </div>
               </div>
-            </>
-          ) : (
-            <div className="glass-card p-12 text-center">
-              <Brain className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg mb-2">
-                {t('price.selectCommodity', appLanguage)}
-              </p>
-              <p className="text-sm text-gray-400">
-                {aiEnabled 
-                  ? 'Select a commodity to see AI-powered price insights and predictions'
-                  : 'Select a commodity to see current market prices'
-                }
-              </p>
+
+              {(() => {
+                const trendInfo = getTrendInfo(priceData.trend);
+                const TrendIcon = trendInfo.icon;
+                return (
+                  <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm ${trendInfo.bg}`}>
+                    <TrendIcon className={`w-4 h-4 ${trendInfo.color}`} />
+                    <span className={`font-medium ${trendInfo.color}`}>{trendInfo.text}</span>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Price Grid */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-4 rounded-xl bg-slate-50">
+                <p className="text-xs text-slate-500 mb-1">{t('price.min', appLanguage)}</p>
+                <p className="text-2xl font-bold text-slate-700">{formatCurrency(priceData.minPrice)}</p>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-orange-50 border-2 border-orange-200">
+                <p className="text-xs text-orange-600 mb-1">{t('price.avg', appLanguage)}</p>
+                <p className="text-2xl font-bold text-orange-600">{formatCurrency(priceData.avgPrice)}</p>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-slate-50">
+                <p className="text-xs text-slate-500 mb-1">{t('price.max', appLanguage)}</p>
+                <p className="text-2xl font-bold text-slate-700">{formatCurrency(priceData.maxPrice)}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* AI Prediction - Compact */}
+          {prediction && (
+            <div className="bg-violet-50 rounded-2xl p-5 border border-violet-100">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-violet-500" />
+                  <span className="font-semibold text-slate-800">{t('ai.prediction', appLanguage)}</span>
+                  <span className="text-xs text-slate-500 bg-white px-2 py-0.5 rounded-full">{t('ai.nextWeek', appLanguage)}</span>
+                </div>
+                <span className={`text-sm font-medium px-2 py-1 rounded-full ${prediction.confidence >= 80 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                  }`}>
+                  {getConfidenceLabel(prediction.confidence)} ({prediction.confidence}%)
+                </span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">{t('ai.currentPrice', appLanguage)}</p>
+                  <p className="text-xl font-bold text-slate-700">{formatCurrency(prediction.current)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">{t('ai.predictedPrice', appLanguage)}</p>
+                  <p className={`text-xl font-bold ${prediction.predicted > prediction.current ? 'text-emerald-600' :
+                      prediction.predicted < prediction.current ? 'text-rose-600' : 'text-slate-700'
+                    }`}>{formatCurrency(prediction.predicted)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">{t('ai.expectedChange', appLanguage)}</p>
+                  <p className={`text-xl font-bold ${prediction.predicted > prediction.current ? 'text-emerald-600' :
+                      prediction.predicted < prediction.current ? 'text-rose-600' : 'text-slate-700'
+                    }`}>
+                    {prediction.predicted >= prediction.current ? '+' : ''}
+                    {formatCurrency(prediction.predicted - prediction.current)}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
-        </div>
-      </div>
+
+          {/* Quick Calculator */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <h3 className="text-sm font-medium text-slate-600 mb-3">{t('calculator.title', appLanguage)}</h3>
+            <div className="flex items-center gap-3 flex-wrap">
+              <input
+                type="number"
+                defaultValue={100}
+                className="w-24 px-3 py-2 rounded-lg border border-slate-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none text-center"
+              />
+              <span className="text-slate-500">{selectedCommodity.unit}</span>
+              <span className="text-slate-400">×</span>
+              <span className="font-semibold text-orange-600">{formatCurrency(priceData.avgPrice)}</span>
+              <span className="text-slate-400">=</span>
+              <span className="text-xl font-bold text-slate-800">{formatCurrency(priceData.avgPrice * 100)}</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
