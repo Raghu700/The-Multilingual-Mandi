@@ -114,7 +114,7 @@ describe('TranslationService', () => {
             clearTranslationHistory();
 
             // Save entries with small delays to ensure different timestamps
-            const savedEntries = entries.map((entry, index) => {
+            const savedEntries = entries.map((entry) => {
               // Add a small offset to timestamp to ensure ordering
               const saved = saveToHistory(entry);
               return saved;

@@ -11,7 +11,7 @@ import * as translationService from '../services/translationService';
 
 // Mock the translation service
 vi.mock('../services/translationService', async () => {
-  const actual = await vi.importActual('../services/translationService');
+  const actual = await vi.importActual<typeof import('../services/translationService')>('../services/translationService');
   return {
     ...actual,
     translate: vi.fn(),
@@ -89,7 +89,7 @@ describe('TranslationTab - Unit Tests', () => {
 
     // Find and click a phrase button (e.g., "Good morning! How can I help you?")
     const phraseButtons = screen.getAllByRole('button');
-    const greetingPhrase = phraseButtons.find(btn => 
+    const greetingPhrase = phraseButtons.find(btn =>
       btn.textContent?.includes('Good morning')
     );
 
@@ -275,7 +275,7 @@ describe('TranslationTab - Unit Tests', () => {
 
     // Change language
     const languageButtons = screen.getAllByRole('button');
-    const teluguButton = languageButtons.find(btn => 
+    const teluguButton = languageButtons.find(btn =>
       btn.textContent?.includes('Telugu')
     );
     teluguButton!.click();

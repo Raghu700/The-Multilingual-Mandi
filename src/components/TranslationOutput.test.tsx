@@ -4,14 +4,14 @@
  * Tests copy confirmation message display
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import { TranslationOutput } from './TranslationOutput';
 import * as translationService from '../services/translationService';
 
 // Mock the translation service
 vi.mock('../services/translationService', async () => {
-  const actual = await vi.importActual('../services/translationService');
+  const actual = await vi.importActual<typeof import('../services/translationService')>('../services/translationService');
   return {
     ...actual,
     copyToClipboard: vi.fn(),
@@ -57,7 +57,7 @@ describe('TranslationOutput - Unit Tests', () => {
   it('changes copy button icon to check mark after successful copy', async () => {
     vi.mocked(translationService.copyToClipboard).mockResolvedValue(true);
 
-    const { container } = render(
+    render(
       <TranslationOutput
         translatedText="नमस्ते"
         targetLanguage="hi"
@@ -124,7 +124,7 @@ describe('TranslationOutput - Unit Tests', () => {
    */
   it('preserves newlines in translated text', () => {
     const multilineText = 'Line 1\nLine 2\nLine 3';
-    
+
     const { container } = render(
       <TranslationOutput
         translatedText={multilineText}

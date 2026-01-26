@@ -39,7 +39,7 @@ interface NegotiationState {
 }
 
 // Validate if price is reasonable (within 50% of market)
-const isPriceReasonable = (price: number, marketPrice: number, role: 'buyer' | 'seller'): boolean => {
+const isPriceReasonable = (price: number, marketPrice: number): boolean => {
   const minReasonable = marketPrice * 0.5;
   const maxReasonable = marketPrice * 1.5;
   return price >= minReasonable && price <= maxReasonable;
@@ -57,7 +57,7 @@ const generateResponse = (
   const isUserBuying = role === 'buyer';
 
   // Check for unrealistic offers
-  if (!isPriceReasonable(userOffer, marketPrice, role)) {
+  if (!isPriceReasonable(userOffer, marketPrice)) {
     const rejectResponses: Record<string, string> = {
       en: `₹${userOffer}? That's not realistic. Market is ₹${marketPrice}. Try again.`,
       hi: `₹${userOffer}? ये सही नहीं है। बाजार भाव ₹${marketPrice}। फिर से बोलो।`,
@@ -277,8 +277,8 @@ export function NegotiationRoom() {
             <button
               onClick={() => setState(prev => ({ ...prev, role: 'buyer' }))}
               className={`flex-1 max-w-[140px] py-5 rounded-xl font-medium transition-all ${state.role === 'buyer'
-                  ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-105'
-                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100'
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-105'
+                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100'
                 }`}
             >
               <User className="w-6 h-6 mx-auto mb-2" />
@@ -287,8 +287,8 @@ export function NegotiationRoom() {
             <button
               onClick={() => setState(prev => ({ ...prev, role: 'seller' }))}
               className={`flex-1 max-w-[140px] py-5 rounded-xl font-medium transition-all ${state.role === 'seller'
-                  ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 scale-105'
-                  : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-100'
+                ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 scale-105'
+                : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-100'
                 }`}
             >
               <TrendingUp className="w-6 h-6 mx-auto mb-2" />
@@ -368,10 +368,10 @@ export function NegotiationRoom() {
           {messages.map(message => (
             <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[70%] rounded-2xl px-4 py-2 ${message.sender === 'user'
-                  ? state.role === 'buyer' ? 'bg-emerald-500 text-white' : 'bg-orange-500 text-white'
-                  : message.type === 'reject'
-                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                    : 'bg-slate-100 text-slate-800'
+                ? state.role === 'buyer' ? 'bg-emerald-500 text-white' : 'bg-orange-500 text-white'
+                : message.type === 'reject'
+                  ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                  : 'bg-slate-100 text-slate-800'
                 }`}>
                 {message.sender === 'counterpart' && (
                   <span className="text-xs text-slate-500 flex items-center gap-1 mb-1">

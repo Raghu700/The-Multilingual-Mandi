@@ -72,7 +72,7 @@ export async function generateStrategies(
     return strategies;
   } catch (error) {
     console.error('AI strategy generation failed, using fallback:', error);
-    
+
     // Fallback to enhanced mock strategies
     return generateFallbackStrategies(context);
   }
@@ -140,7 +140,7 @@ export function getQuickTips(language: Language = 'en'): NegotiationTip[] {
  */
 export function translateStrategy(
   strategy: NegotiationStrategy,
-  language: Language
+  _language: Language
 ): NegotiationStrategy {
   // For now, return as-is (English only)
   // In production, integrate with translation service

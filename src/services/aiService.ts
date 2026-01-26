@@ -7,13 +7,7 @@ import { Commodity } from '../data/commodities';
 import { NegotiationContext, NegotiationStrategy } from '../types';
 
 // AI Configuration
-const AI_CONFIG = {
-  // In a real implementation, these would be environment variables
-  apiEndpoint: 'https://api.anthropic.com/v1/messages',
-  model: 'claude-3-sonnet-20240229',
-  maxTokens: 1000,
-  temperature: 0.7,
-};
+
 
 export interface MarketInsight {
   id: string;
@@ -54,38 +48,14 @@ export async function generateAINegotiationStrategies(
     // Calculate key metrics
     const priceDifference = context.askingPrice - context.buyerOffer;
     const priceGapPercent = (priceDifference / context.askingPrice) * 100;
-    const totalValue = context.askingPrice * context.quantity;
 
     // Create AI prompt for negotiation strategies (for future API integration)
-    const _prompt = `
-You are an expert agricultural commodity negotiation advisor. Generate 3 practical negotiation strategies for this scenario:
 
-Product: ${context.product}
-Seller's asking price: ₹${context.askingPrice} per unit
-Buyer's offer: ₹${context.buyerOffer} per unit
-Quantity: ${context.quantity} units
-Price gap: ${priceGapPercent.toFixed(1)}%
-Total deal value: ₹${totalValue.toLocaleString()}
-
-Consider:
-- Indian agricultural market dynamics
-- Seasonal factors and demand patterns
-- Quality justification techniques
-- Volume-based pricing strategies
-- Relationship building for future deals
-
-For each strategy, provide:
-1. A clear title (max 6 words)
-2. A brief description (2-3 sentences)
-3. 3-4 specific action points
-
-Format as JSON array with objects containing: id, title, description, actionPoints
-`;
 
     // In a real implementation, this would call the actual AI API
     // For now, we'll use enhanced mock data based on the context
     const strategies = await generateContextualStrategies(context, priceDifference, priceGapPercent);
-    
+
     return strategies;
   } catch (error) {
     console.error('AI strategy generation failed:', error);
@@ -203,10 +173,10 @@ export async function generatePricePrediction(
     await new Promise(resolve => setTimeout(resolve, 600));
 
     const basePrice = commodity.basePrice;
-    
+
     // Generate realistic price prediction based on commodity type and timeframe
     const prediction = generateRealisticPrediction(commodity, basePrice, timeframe);
-    
+
     return prediction;
   } catch (error) {
     console.error('Price prediction failed:', error);
@@ -225,7 +195,7 @@ function generateRealisticPrediction(
   // Seasonal and market factors for different commodities
   const seasonalFactors = getSeasonalFactors(commodity.id);
   const marketVolatility = getMarketVolatility(commodity.id);
-  
+
   // Time-based prediction variance
   const timeMultiplier = {
     '1day': 0.02,   // 2% max change
@@ -237,16 +207,16 @@ function generateRealisticPrediction(
   const randomFactor = (Math.random() - 0.5) * 2; // -1 to 1
   const seasonalImpact = seasonalFactors.impact * seasonalFactors.strength;
   const volatilityImpact = marketVolatility * randomFactor;
-  
+
   const totalImpact = (seasonalImpact + volatilityImpact) * timeMultiplier;
   const predictedPrice = Math.round(basePrice * (1 + totalImpact));
-  
+
   const priceChange = predictedPrice - basePrice;
   const priceChangePercent = (priceChange / basePrice) * 100;
-  
+
   // Generate confidence based on volatility (lower volatility = higher confidence)
   const confidence = Math.round(85 - (marketVolatility * 30));
-  
+
   return {
     commodity,
     currentPrice: basePrice,
@@ -264,7 +234,7 @@ function generateRealisticPrediction(
  */
 function getSeasonalFactors(commodityId: string): { impact: number; strength: number } {
   const currentMonth = new Date().getMonth(); // 0-11
-  
+
   const seasonalMap: Record<string, { peak: number[]; impact: number }> = {
     'rice': { peak: [9, 10, 11], impact: 0.1 },      // Oct-Dec harvest
     'wheat': { peak: [2, 3, 4], impact: 0.12 },      // Mar-May harvest
@@ -278,7 +248,7 @@ function getSeasonalFactors(commodityId: string): { impact: number; strength: nu
 
   const factors = seasonalMap[commodityId] || { peak: [], impact: 0.1 };
   const isPeakSeason = factors.peak.includes(currentMonth);
-  
+
   return {
     impact: isPeakSeason ? factors.impact : -factors.impact * 0.5,
     strength: isPeakSeason ? 1 : 0.5
@@ -322,7 +292,7 @@ function generatePriceFactors(commodityId: string, _seasonalFactors: any, _isInc
   };
 
   const specific = commoditySpecific[commodityId] || ['Market sentiment', 'Regional demand', 'Quality variations'];
-  
+
   return [...baseFactors, ...specific.slice(0, 2)];
 }
 
@@ -334,11 +304,11 @@ export async function generateMarketInsights(commodity: Commodity): Promise<Mark
 
   const insights: MarketInsight[] = [];
   const currentMonth = new Date().getMonth();
-  
+
   // Generate 2-3 relevant insights
   insights.push(generateTrendInsight(commodity));
   insights.push(generateSeasonalInsight(commodity, currentMonth));
-  
+
   if (Math.random() > 0.5) {
     insights.push(generateDemandInsight(commodity));
   }
@@ -349,7 +319,7 @@ export async function generateMarketInsights(commodity: Commodity): Promise<Mark
 function generateTrendInsight(commodity: Commodity): MarketInsight {
   const trends = ['up', 'down', 'stable'] as const;
   const trend = trends[Math.floor(Math.random() * trends.length)];
-  
+
   const trendMessages = {
     up: {
       title: 'Upward Price Trend',
@@ -369,7 +339,7 @@ function generateTrendInsight(commodity: Commodity): MarketInsight {
   };
 
   const message = trendMessages[trend];
-  
+
   return {
     id: `trend-${commodity.id}`,
     type: 'price_trend',
@@ -401,7 +371,7 @@ function generateSeasonalInsight(commodity: Commodity, _currentMonth: number): M
   ];
 
   const message = seasonalMessages[Math.floor(Math.random() * seasonalMessages.length)];
-  
+
   return {
     id: `seasonal-${commodity.id}`,
     type: 'seasonal_factor',
@@ -428,7 +398,7 @@ function generateDemandInsight(commodity: Commodity): MarketInsight {
   ];
 
   const message = demandMessages[Math.floor(Math.random() * demandMessages.length)];
-  
+
   return {
     id: `demand-${commodity.id}`,
     type: 'demand_forecast',
@@ -452,7 +422,7 @@ export async function generatePriceRecommendation(
 
   const basePrice = commodity.basePrice;
   const marketConditions = await analyzeMarketConditions(commodity);
-  
+
   // Calculate recommended price based on multiple factors
   let recommendedPrice = basePrice;
   let reasoning = '';

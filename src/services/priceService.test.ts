@@ -14,7 +14,7 @@ import {
   getTrendIndicator,
   formatCurrency,
   validateQuantity,
-  createPriceCalculation,
+
 } from './priceService';
 import { getAllCommodities } from '../data/commodities';
 
@@ -45,7 +45,7 @@ describe('Price Service - Unit Tests', () => {
     it('generates price data with min, avg, max', () => {
       const commodities = getCommodities();
       const priceData = getPriceData(commodities[0]);
-      
+
       expect(priceData).toHaveProperty('minPrice');
       expect(priceData).toHaveProperty('avgPrice');
       expect(priceData).toHaveProperty('maxPrice');
@@ -56,7 +56,7 @@ describe('Price Service - Unit Tests', () => {
     it('ensures min < avg < max', () => {
       const commodities = getCommodities();
       const priceData = getPriceData(commodities[0]);
-      
+
       expect(priceData.minPrice).toBeLessThan(priceData.avgPrice);
       expect(priceData.avgPrice).toBeLessThan(priceData.maxPrice);
     });
@@ -64,7 +64,7 @@ describe('Price Service - Unit Tests', () => {
     it('generates valid trend values', () => {
       const commodities = getCommodities();
       const priceData = getPriceData(commodities[0]);
-      
+
       expect(['up', 'down', 'stable']).toContain(priceData.trend);
     });
   });
@@ -181,19 +181,19 @@ describe('Price Service - Property Tests', () => {
         (commodity) => {
           const priceData = getPriceData(commodity);
           const basePrice = commodity.basePrice;
-          
+
           // Check ±10% bounds
           const expectedMin = Math.round(basePrice * 0.9);
           const expectedMax = Math.round(basePrice * 1.1);
-          
+
           expect(priceData.minPrice).toBe(expectedMin);
           expect(priceData.avgPrice).toBe(basePrice);
           expect(priceData.maxPrice).toBe(expectedMax);
-          
+
           // Check ordering
           expect(priceData.minPrice).toBeLessThan(priceData.avgPrice);
           expect(priceData.avgPrice).toBeLessThan(priceData.maxPrice);
-          
+
           return true;
         }
       ),
@@ -218,11 +218,11 @@ describe('Price Service - Property Tests', () => {
         (quantity, price) => {
           const total = calculateTotal(quantity, price);
           const expected = Math.round(quantity * price * 100) / 100;
-          
+
           expect(total).toBe(expected);
           expect(total).toBeGreaterThanOrEqual(0);
           expect(Number.isFinite(total)).toBe(true);
-          
+
           return true;
         }
       ),
@@ -245,7 +245,7 @@ describe('Price Service - Property Tests', () => {
         fc.constantFrom('min' as const, 'avg' as const, 'max' as const),
         (priceType) => {
           const color = getPriceColor(priceType);
-          
+
           if (priceType === 'min') {
             expect(color).toBe('text-green');
           } else if (priceType === 'avg') {
@@ -253,7 +253,7 @@ describe('Price Service - Property Tests', () => {
           } else if (priceType === 'max') {
             expect(color).toBe('text-red-600');
           }
-          
+
           return true;
         }
       ),
@@ -278,14 +278,14 @@ describe('Price Service - Property Tests', () => {
           const startTime = performance.now();
           const priceData = getPriceData(commodity);
           const endTime = performance.now();
-          
+
           // Check generation is fast (< 10ms)
           expect(endTime - startTime).toBeLessThan(10);
-          
+
           // Check data is generated (not null/undefined)
           expect(priceData).toBeDefined();
           expect(priceData.commodity).toBe(commodity);
-          
+
           return true;
         }
       ),
@@ -315,7 +315,7 @@ describe('Price Service - Property Tests', () => {
           const result = validateQuantity(invalidQuantity);
           expect(result.valid).toBe(false);
           expect(result.error).toBeDefined();
-          
+
           return true;
         }
       ),
@@ -338,17 +338,17 @@ describe('Price Service - Property Tests', () => {
         fc.float({ min: Math.fround(0), max: Math.fround(1000000), noNaN: true }),
         (amount) => {
           const formatted = formatCurrency(amount);
-          
+
           // Check ₹ symbol
           expect(formatted).toMatch(/^₹/);
-          
+
           // Check 2 decimal places
           expect(formatted).toMatch(/\.\d{2}$/);
-          
+
           // Check parseable back to number
           const parsed = parseFloat(formatted.substring(1));
           expect(Math.abs(parsed - amount)).toBeLessThan(0.01);
-          
+
           return true;
         }
       ),

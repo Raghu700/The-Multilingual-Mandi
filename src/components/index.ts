@@ -31,3 +31,6 @@ export { NegotiationRoom } from './NegotiationRoom';
 export { ContextForm } from './ContextForm';
 export { StrategyList } from './StrategyList';
 export { QuickTips } from './QuickTips';
+
+// Smart Matching Module
+export { SmartMatchTab } from './SmartMatchTab';
