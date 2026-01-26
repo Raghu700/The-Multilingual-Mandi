@@ -1,6 +1,6 @@
 # MandiMind - India's 77th Republic Day Special 🇮🇳
 
-A multilingual mandi (market) platform celebrating India's 77th Republic Day (26 January 2026). MandiMind helps India's 50M+ vendors overcome language barriers through real-time translation, price discovery, and AI-powered negotiation assistance.
+A multilingual Mandi (market) platform celebrating India's 77th Republic Day (26 January 2026). MandiMind helps India's 50M+ vendors overcome language barriers through real-time translation, price discovery, and AI-powered negotiation assistance.
 
 ## Features
 
