@@ -11,6 +11,26 @@
 
 ---
 
+## 🚀 Quick Start
+
+Get the app running in 2 minutes:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd The-Multilingual-Mandi
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The app will open at **http://localhost:8000**
+
+---
+
 ## 🎯 The Problem
 
 India's local vendors (farmers, traders, small business owners) face three critical challenges:
@@ -79,10 +99,8 @@ Full UI translation in:
 ## 🎨 Design Philosophy
 
 ### **Culturally Respectful**
-- **Ashoka Chakra** (24-spoke wheel) in Konark brick-red as the logo
-- **Tricolor accents** throughout the UI
-- **"जय हिंद!"** footer (always in Hindi, regardless of language)
-
+- **Konark Sun Dial Inspired Logo**: The spinning wheel in the header is inspired by the intricate [Konark Sun Temple](https://en.wikipedia.org/wiki/Konark_Sun_Temple) dials, symbolizing the "Wheel of Time" and progress (Kaal Chakra).
+- **Brick Red Palette**: The logo color (`#A63A2E`) mimics the red sandstone of the temple.
 ### **Accessibility-First**
 - **Large touch targets** (64x64px minimum)
 - **Icon-first, text-secondary** design
@@ -93,7 +111,6 @@ Full UI translation in:
 - **Glassmorphism** cards with subtle shadows
 - **Smooth animations** (fade-in, scale, rotate)
 - **Gradient buttons** for primary actions
-- **Micro-interactions** (hover effects, loading states)
 
 ---
 
@@ -110,37 +127,7 @@ Full UI translation in:
 
 ---
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+ and npm
-
-### Installation
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd The-Multilingual-Mandi
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-The app will open at **http://localhost:8001**
-
-### Build for Production
-
-```bash
-npm run build
-npm run preview
-```
-
----
-
-## 📁 Project Structure
+##  Project Structure
 
 ```
 src/
@@ -148,7 +135,7 @@ src/
 │   ├── SmartMatchTab.tsx       # 🆕 AI-powered marketplace matching
 │   ├── NegotiationRoom.tsx     # Practice negotiation with AI
 │   ├── PriceDiscoveryTab.tsx   # Market prices & AI predictions
-│   ├── Header.tsx              # Ashoka Chakra logo + language selector
+│   ├── Header.tsx              # Konark Chakra logo + language selector
 │   ├── Footer.tsx              # "जय हिंद!" footer
 │   └── TabNavigation.tsx       # 3-tab navigation
 ├── contexts/
@@ -164,11 +151,11 @@ src/
 
 ---
 
-## � User Journey (Watch the Demo!)
+## 🎮 User Journey (Watch the Demo!)
 
 ### **Scenario: Farmer wants to sell 50kg Rice**
 
-1. **Open App** → See Ashoka Chakra logo, select Hindi (हिन्दी)
+1. **Open App** → See Ashok Chakra logo, select Hindi (हिन्दी)
 2. **Click "Smart Match"** tab (purple gradient, marked "NEW")
 3. **Tap "Sell Goods"** → Large orange button with store icon
 4. **Select Rice** 🍚 → Tap emoji from grid
@@ -211,10 +198,10 @@ matchScore = f(priceCompatibility, quantityMatch, distance, rating)
 ---
 
 ## 🎥 Demo Video Guide
-    
+
 **[Watch on YouTube](https://youtu.be/7CtHhV3Krqc)** showcases:
 
-1. **0:00-0:15** - App overview, Ashoka Chakra logo, language switching
+1. **0:00-0:15** - App overview, Konark Chakra logo, language switching
 2. **0:15-0:45** - Price Discovery tab (market prices, AI predictions)
 3. **0:45-1:30** - **Smart Match flow** (Buy/Sell → Select → Match → Connect)
 4. **1:30-2:00** - Negotiation Practice (AI counterpart, validation)
@@ -237,23 +224,12 @@ matchScore = f(priceCompatibility, quantityMatch, distance, rating)
 ### **Innovation**
 - **First** AI-powered mandi matching in India
 - **Simplest UX** for semi-literate users (emoji-first, 3-tap flow)
-- **Culturally authentic** (Ashoka Chakra, tricolor, "जय हिंद!")
+- **Culturally authentic** (Konark Chakra, "जय हिंद!")
 
 ### **Scalability**
 - **Cloud-ready** architecture (React + Vite)
 - **Extensible** to 22+ Indian languages
 - **API-first** design (ready for mobile apps)
-
----
-
-## 🔮 Future Roadmap
-
-- [ ] **Voice Input** (for illiterate users)
-- [ ] **WhatsApp Integration** (reach 500M+ users)
-- [ ] **Payment Gateway** (UPI, Paytm)
-- [ ] **Logistics Tracking** (real-time delivery updates)
-- [ ] **Farmer Loans** (AI credit scoring)
-- [ ] **Weather Alerts** (crop protection)
 
 ---
 
