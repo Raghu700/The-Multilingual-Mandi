@@ -1,921 +1,1516 @@
-# Design Document: MandiMind
+# Design Document: MandiMind Exchange (Enhanced)
 
 ## Overview
 
-MandiMind is a client-side React application celebrating India's 77th Republic Day. The system provides three core modules: real-time translation, price discovery, and AI-powered negotiation assistance. Built with React + Vite + Tailwind CSS, it runs entirely in the browser using localStorage for persistence and optional Claude API integration for AI features.
+MandiMind Exchange transforms the original static platform into a **live trading floor** celebrating India's 77th Republic Day. The system provides a real-time bidding exchange where buyers and sellers negotiate prices, post orders, and close deals across 5 Indian languages. Built with React + Vite + Tailwind CSS, it simulates a high-frequency trading environment entirely client-side using localStorage for persistence and sophisticated mock data generation for live market dynamics.
 
-The application follows a tab-based navigation pattern with three main views, each representing a core module. All data is mock/client-generated except for optional Claude API calls. The design emphasizes rapid development (24-hour timeline) with a patriotic tricolor theme throughout.
+The application centers on a **live exchange board** showing bid-ask spreads, an **order book** with market depth, and a **negotiation interface** with AI-powered coaching. All data is client-generated with realistic market simulation, plus optional Claude API for advanced negotiation strategies.
 
 ## Architecture
 
 ### High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     Browser (Client)                     │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │           React Application (Vite)                 │ │
-│  │                                                    │ │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌─────────┐ │ │
-│  │  │ Translation  │  │    Price     │  │   AI    │ │ │
-│  │  │   Module     │  │  Discovery   │  │ Negotia │ │ │
-│  │  │              │  │   Module     │  │  tion   │ │ │
-│  │  └──────┬───────┘  └──────┬───────┘  └────┬────┘ │ │
-│  │         │                 │                │      │ │
-│  │         └─────────┬───────┴────────────────┘      │ │
-│  │                   │                               │ │
-│  │         ┌─────────▼─────────┐                     │ │
-│  │         │  Shared Services  │                     │ │
-│  │         │  - LocalStorage   │                     │ │
-│  │         │  - Theme System   │                     │ │
-│  │         │  - Utils          │                     │ │
-│  │         └─────────┬─────────┘                     │ │
-│  │                   │                               │ │
-│  └───────────────────┼───────────────────────────────┘ │
-│                      │                                  │
-│         ┌────────────┼────────────┐                     │
-│         │            │            │                     │
-│    ┌────▼────┐  ┌───▼────┐  ┌───▼──────┐              │
-│    │LocalStor│  │Clipboar│  │ Claude   │              │
-│    │age API  │  │d API   │  │ API      │              │
-│    └─────────┘  └────────┘  └──────────┘              │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                     Browser (Client)                          │
+│                                                               │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │           React Application (Vite)                       │ │
+│  │                                                          │ │
+│  │  ┌────────────────┐  ┌──────────────┐  ┌─────────────┐ │ │
+│  │  │   Exchange     │  │  Order Book  │  │ Negotiation │ │ │
+│  │  │     Board      │  │   & Depth    │  │    Room     │ │ │
+│  │  │  (Live View)   │  │  Viewer      │  │  (AI Coach) │ │ │
+│  │  └───────┬────────┘  └──────┬───────┘  └──────┬──────┘ │ │
+│  │          │                   │                  │        │ │
+│  │          └───────────┬───────┴──────────────────┘        │ │
+│  │                      │                                   │ │
+│  │          ┌───────────▼──────────┐                        │ │
+│  │          │   Core Services      │                        │ │
+│  │          │  - Match Engine      │                        │ │
+│  │          │  - Market Simulator  │                        │ │
+│  │          │  - Price Generator   │                        │ │
+│  │          │  - Translation       │                        │ │
+│  │          │  - LocalStorage      │                        │ │
+│  │          └───────────┬──────────┘                        │ │
+│  │                      │                                   │ │
+│  └──────────────────────┼───────────────────────────────────┘ │
+│                         │                                     │
+│            ┌────────────┼────────────┐                        │
+│            │            │            │                        │
+│       ┌────▼────┐  ┌───▼────┐  ┌───▼──────┐                 │
+│       │LocalStor│  │Interval│  │ Claude   │                 │
+│       │age API  │  │ Timers │  │ API      │                 │
+│       └─────────┘  └────────┘  └──────────┘                 │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ### Component Hierarchy
 
 ```
 App
-├── Header (Republic Day branding)
-├── TabNavigation
-│   ├── TranslationTab
-│   ├── PriceDiscoveryTab
-│   └── NegotiationTab
-└── Footer (Jai Hind message)
-
-TranslationTab
-├── LanguageSelector
-├── TextInput
-├── TranslateButton
-├── TranslationOutput
-├── CopyButton
-├── PhraseLibrary
-└── TranslationHistory
-
-PriceDiscoveryTab
-├── CommoditySelector
-├── PriceCard (Min/Avg/Max)
-├── TrendIndicator
-├── PriceCalculator
-└── ResultDisplay
-
-NegotiationTab
-├── ContextForm
-│   ├── ProductInput
-│   ├── AskingPriceInput
-│   ├── BuyerOfferInput
-│   └── QuantityInput
-├── GenerateButton
-├── StrategyList
-└── QuickTips
+├── Header (Republic Day Exchange Branding)
+├── ExchangeView (Main Container)
+│   ├── ExchangeBoard (Default View)
+│   │   ├── LiveTicker (Total volume, active traders)
+│   │   ├── CommodityGrid
+│   │   │   └── CommodityCard (x15-20)
+│   │   │       ├── BidAskSpread
+│   │   │       ├── MomentumIndicator
+│   │   │       ├── VolumeInfo
+│   │   │       └── QuickTradeButton
+│   │   └── HotDealsPanel
+│   │       └── NarrowSpreadAlerts
+│   │
+│   ├── OrderBookView (Drill-Down)
+│   │   ├── OrderBookHeader
+│   │   │   ├── CommodityInfo
+│   │   │   ├── MidMarketPrice
+│   │   │   └── SpreadIndicator
+│   │   ├── DepthChart
+│   │   │   ├── BuyDepthBars (Green)
+│   │   │   └── SellDepthBars (Red)
+│   │   ├── OrderBookTable
+│   │   │   ├── BidsSide (Left Column)
+│   │   │   │   └── BidRow (Price, Qty, Total, Time)
+│   │   │   └── AsksSide (Right Column)
+│   │   │       └── AskRow (Price, Qty, Total, Time)
+│   │   ├── QuickOrderForm
+│   │   │   ├── BidAskToggle
+│   │   │   ├── PriceInput (Smart Suggestions)
+│   │   │   ├── QuantityInput
+│   │   │   └── PostOrderButton
+│   │   └── NearMatchesPanel
+│   │       └── AdjustPriceSuggestions
+│   │
+│   ├── NegotiationRoom (Modal/Slide-In)
+│   │   ├── NegotiationHeader
+│   │   │   ├── DealSummary
+│   │   │   ├── SpreadVisualization
+│   │   │   └── LanguageSelector
+│   │   ├── MessageThread
+│   │   │   └── Message (Translated)
+│   │   ├── QuickCounterOffers
+│   │   │   ├── SplitDifferenceButton
+│   │   │   ├── PlusMinusButtons
+│   │   │   └── AcceptButton
+│   │   ├── AICoachPanel
+│   │   │   ├── StrategyCards
+│   │   │   ├── ConfidenceIndicator
+│   │   │   └── MarketContext
+│   │   └── MessageInput (Multilingual)
+│   │
+│   └── TradingDashboard (User's View)
+│       ├── ActiveOrders
+│       │   └── OrderCard (Edit, Cancel)
+│       ├── NearMatches
+│       │   └── OpportunityCard
+│       ├── PendingNegotiations
+│       │   └── NegotiationCard
+│       ├── CompletedTrades
+│       │   └── TradeHistoryItem
+│       └── WatchedCommodities
+│           └── QuickAccessCard
+│
+└── Footer (Jai Hind 🇮🇳)
 ```
 
-## Components and Interfaces
+### State Management Architecture
 
-### Translation Module
-
-**TranslationService**
 ```typescript
-interface TranslationEntry {
-  id: string;
-  sourceText: string;
-  sourceLang: string;
-  targetLang: string;
-  translatedText: string;
-  timestamp: number;
+// Global App State (React Context or Zustand)
+interface AppState {
+  // User State
+  user: {
+    id: string;
+    language: Language;
+    activeOrders: Order[];
+    watchlist: string[]; // commodity IDs
+  };
+  
+  // Market State
+  market: {
+    commodities: Commodity[];
+    orderBooks: Map<string, OrderBook>; // commodityId -> OrderBook
+    recentTrades: Trade[];
+    marketStats: MarketStatistics;
+  };
+  
+  // UI State
+  ui: {
+    currentView: 'exchange' | 'orderbook' | 'dashboard';
+    selectedCommodity: string | null;
+    activeNegotiations: Negotiation[];
+    notifications: Notification[];
+  };
+  
+  // Simulation State
+  simulation: {
+    isRunning: boolean;
+    lastUpdateTime: number;
+    marketEventQueue: MarketEvent[];
+  };
+}
+```
+
+## Core Components and Interfaces
+
+### 1. Exchange Board System
+
+**CommodityMarketData**
+```typescript
+interface CommodityMarketData {
+  commodity: Commodity;
+  bestBid: number | null; // Highest price buyers willing to pay
+  bestAsk: number | null; // Lowest price sellers willing to accept
+  spread: number; // bestAsk - bestBid
+  spreadPercentage: number; // (spread / bestAsk) * 100
+  lastTradePrice: number;
+  lastTradeTime: number;
+  momentum: Momentum; // '↑↑' | '↑' | '→' | '↓' | '↓↓'
+  volume24h: number; // Total volume traded
+  activeBids: number; // Count
+  activeAsks: number; // Count
+  isHotDeal: boolean; // spread < 5%
 }
 
-interface TranslationService {
-  // Translate text to target language
-  translate(text: string, targetLang: Language): Promise<string>;
-  
-  // Get pre-translated mandi phrase
-  getMandiPhrase(phraseId: string, targetLang: Language): string;
-  
-  // Save translation to history
-  saveToHistory(entry: TranslationEntry): void;
-  
-  // Retrieve translation history
-  getHistory(): TranslationEntry[];
-  
-  // Copy text to clipboard
-  copyToClipboard(text: string): Promise<boolean>;
-}
+type Momentum = 'surge_up' | 'up' | 'stable' | 'down' | 'surge_down';
 
-type Language = 'en' | 'hi' | 'te' | 'ta' | 'bn';
-
-interface MandiPhrase {
-  id: string;
-  en: string;
-  hi: string;
-  te: string;
-  ta: string;
-  bn: string;
+interface ExchangeBoardService {
+  // Get all commodity market data
+  getMarketOverview(): CommodityMarketData[];
+  
+  // Get specific commodity data
+  getCommodityData(commodityId: string): CommodityMarketData;
+  
+  // Subscribe to live updates
+  subscribeToMarketUpdates(callback: (data: CommodityMarketData[]) => void): UnsubscribeFn;
+  
+  // Get hot deals (narrow spreads)
+  getHotDeals(): CommodityMarketData[];
+  
+  // Search commodities
+  searchCommodities(query: string, language: Language): Commodity[];
 }
 ```
 
 **Implementation Notes:**
-- Use a translation map for common mandi phrases (10-15 pre-translated)
-- For dynamic translation, use a simple translation API or library (e.g., Google Translate API via client, or a lightweight library)
-- LocalStorage key: `mandimind_translation_history`
-- History limited to last 50 entries to prevent storage bloat
-- Clipboard API with fallback to document.execCommand for older browsers
+- Use `setInterval` to simulate live updates every 3-5 seconds
+- Generate realistic price movements using random walk algorithm
+- Maintain bid/ask spread within realistic bounds (2-20%)
+- Hot deals flash with animated border when spread < 5%
+- Momentum calculated from last 5 trades direction
 
-### Price Discovery Module
+### 2. Order Book & Depth System
 
-**PriceService**
+**Order**
 ```typescript
-interface Commodity {
-  id: string;
-  name: string;
-  nameHi: string;
-  nameTe: string;
-  nameTa: string;
-  nameBn: string;
-  unit: string; // kg, quintal, dozen, etc.
-  basePrice: number; // Base price for calculations
-}
-
-interface PriceData {
-  commodity: Commodity;
-  minPrice: number;
-  avgPrice: number;
-  maxPrice: number;
-  trend: 'up' | 'down' | 'stable';
-  lastUpdated: number;
-}
-
-interface PriceCalculation {
+interface Order {
+  id: string; // ORD-123456
+  type: 'bid' | 'ask';
+  commodityId: string;
+  price: number; // per unit
   quantity: number;
-  pricePerUnit: number;
-  total: number;
-  commodity: Commodity;
+  unit: string; // kg, quintal, dozen
+  totalValue: number; // price * quantity
+  traderId: string; // Anonymous: B-1234, S-5678
+  timestamp: number;
+  expiresAt: number;
+  status: 'active' | 'matched' | 'expired' | 'cancelled';
+  minOrderQty?: number; // Minimum order quantity
 }
 
-interface PriceService {
-  // Get list of all commodities
-  getCommodities(): Commodity[];
+interface OrderBook {
+  commodityId: string;
+  bids: Order[]; // Sorted descending by price (best bid first)
+  asks: Order[]; // Sorted ascending by price (best ask first)
+  midMarketPrice: number; // (bestBid + bestAsk) / 2
+  totalBidVolume: number;
+  totalAskVolume: number;
+  depthData: DepthLevel[];
+}
+
+interface DepthLevel {
+  price: number;
+  bidVolume: number; // Cumulative quantity at this price
+  askVolume: number;
+  bidOrders: number; // Count of orders
+  askOrders: number;
+}
+
+interface OrderBookService {
+  // Get full order book for commodity
+  getOrderBook(commodityId: string): OrderBook;
   
-  // Get price data for a commodity
-  getPriceData(commodityId: string): PriceData;
+  // Post new order
+  postOrder(order: Omit<Order, 'id' | 'timestamp' | 'status'>): Order;
   
-  // Calculate total price
-  calculateTotal(commodityId: string, quantity: number, priceType: 'min' | 'avg' | 'max'): PriceCalculation;
+  // Cancel order
+  cancelOrder(orderId: string): boolean;
   
-  // Get price color coding
-  getPriceColor(price: number, minPrice: number, maxPrice: number): 'red' | 'yellow' | 'green';
+  // Update order (price/quantity)
+  updateOrder(orderId: string, updates: Partial<Order>): Order;
+  
+  // Get user's active orders
+  getUserOrders(userId: string): Order[];
+  
+  // Calculate market depth
+  calculateDepth(commodityId: string, priceRange: number): DepthLevel[];
+  
+  // Find near matches for user's order
+  findNearMatches(orderId: string, threshold: number): Order[];
 }
 ```
 
-**Mock Data Generation:**
-- 15-20 common commodities: Rice, Wheat, Tomatoes, Onions, Potatoes, Mangoes, Bananas, Apples, Milk, Eggs, Chicken, Fish, Lentils, Sugar, Tea, Coffee, Spices
-- Base prices with ±10% random variation for min/max
-- Average = (min + max) / 2
-- Trend randomly assigned with 40% up, 40% down, 20% stable
-- Prices regenerated on each page load for demo purposes
-
-### AI Negotiation Assistant
-
-**NegotiationService**
+**Order Book Rendering:**
 ```typescript
-interface NegotiationContext {
-  product: string;
-  askingPrice: number;
-  buyerOffer: number;
+// Visual depth bars
+interface DepthBarConfig {
+  maxBarWidth: number; // in pixels
+  buyColor: '#138808'; // Green
+  sellColor: '#FF9933'; // Saffron
+}
+
+// Depth chart shows cumulative volume
+// BUY side: Green bars extending left from center
+// SELL side: Red bars extending right from center
+// User's order highlighted with animation
+```
+
+**Market Depth Calculation:**
+```typescript
+function calculateMarketDepth(orders: Order[], midPrice: number): DepthLevel[] {
+  const priceRange = midPrice * 0.2; // ±20% from mid
+  const priceStep = midPrice * 0.01; // 1% steps
+  
+  const levels: DepthLevel[] = [];
+  
+  for (let price = midPrice - priceRange; price <= midPrice + priceRange; price += priceStep) {
+    const bidsAtPrice = orders.filter(o => o.type === 'bid' && Math.abs(o.price - price) < priceStep);
+    const asksAtPrice = orders.filter(o => o.type === 'ask' && Math.abs(o.price - price) < priceStep);
+    
+    levels.push({
+      price: Math.round(price * 100) / 100,
+      bidVolume: sum(bidsAtPrice.map(o => o.quantity)),
+      askVolume: sum(asksAtPrice.map(o => o.quantity)),
+      bidOrders: bidsAtPrice.length,
+      askOrders: asksAtPrice.length
+    });
+  }
+  
+  // Calculate cumulative volumes
+  levels.forEach((level, i) => {
+    if (i > 0) {
+      level.bidVolume += levels[i - 1].bidVolume;
+      level.askVolume += levels[i - 1].askVolume;
+    }
+  });
+  
+  return levels;
+}
+```
+
+### 3. Matching Engine
+
+**Match**
+```typescript
+interface Match {
+  id: string;
+  bidOrder: Order;
+  askOrder: Order;
+  matchPrice: number; // Price at which deal happens
+  matchQuantity: number; // Quantity traded
+  timestamp: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  expiresAt: number; // 60 second countdown
+}
+
+interface Trade {
+  id: string;
+  commodityId: string;
+  price: number;
   quantity: number;
-  language: Language;
+  buyerId: string;
+  sellerId: string;
+  timestamp: number;
+  matchId: string;
+}
+
+interface MatchEngine {
+  // Find exact matches
+  findExactMatches(): Match[];
+  
+  // Find near matches (within threshold %)
+  findNearMatches(threshold: number): Match[];
+  
+  // Accept a match
+  acceptMatch(matchId: string, userId: string): Trade;
+  
+  // Reject/counter a match
+  rejectMatch(matchId: string, userId: string): void;
+  
+  // Get pending matches for user
+  getUserMatches(userId: string): Match[];
+  
+  // Auto-match if both parties agree on price
+  autoMatch(bidId: string, askId: string): Match;
+}
+```
+
+**Matching Logic:**
+```typescript
+function findMatches(orderBook: OrderBook): Match[] {
+  const matches: Match[] = [];
+  
+  // Sort bids descending, asks ascending
+  const sortedBids = orderBook.bids.sort((a, b) => b.price - a.price);
+  const sortedAsks = orderBook.asks.sort((a, b) => a.price - b.price);
+  
+  for (const bid of sortedBids) {
+    for (const ask of sortedAsks) {
+      // Exact match: bid price >= ask price
+      if (bid.price >= ask.price) {
+        const matchQty = Math.min(bid.quantity, ask.quantity);
+        const matchPrice = (bid.price + ask.price) / 2; // Fair price
+        
+        matches.push({
+          id: `MATCH-${Date.now()}`,
+          bidOrder: bid,
+          askOrder: ask,
+          matchPrice,
+          matchQuantity: matchQty,
+          timestamp: Date.now(),
+          status: 'pending',
+          expiresAt: Date.now() + 60000 // 1 minute
+        });
+      }
+      
+      // Near match: within 5%
+      const spread = Math.abs(bid.price - ask.price);
+      const avgPrice = (bid.price + ask.price) / 2;
+      if (spread / avgPrice < 0.05) {
+        // Create near match notification
+        // (handled separately from exact matches)
+      }
+    }
+  }
+  
+  return matches;
+}
+```
+
+### 4. Negotiation Room
+
+**Negotiation**
+```typescript
+interface Negotiation {
+  id: string;
+  commodityId: string;
+  buyerOrder: Order;
+  sellerOrder: Order;
+  messages: NegotiationMessage[];
+  currentBuyerOffer: number;
+  currentSellerOffer: number;
+  spread: number;
+  status: 'active' | 'closed' | 'deal' | 'abandoned';
+  createdAt: number;
+  lastActivity: number;
+}
+
+interface NegotiationMessage {
+  id: string;
+  senderId: string;
+  senderType: 'buyer' | 'seller' | 'system' | 'ai_coach';
+  content: string;
+  originalLanguage: Language;
+  timestamp: number;
+  messageType: 'text' | 'counter_offer' | 'accept' | 'reject';
+  offerPrice?: number;
+}
+
+interface NegotiationService {
+  // Start negotiation
+  createNegotiation(bidId: string, askId: string): Negotiation;
+  
+  // Send message
+  sendMessage(negotiationId: string, message: Omit<NegotiationMessage, 'id' | 'timestamp'>): void;
+  
+  // Counter offer
+  counterOffer(negotiationId: string, userId: string, newPrice: number): void;
+  
+  // Accept offer
+  acceptOffer(negotiationId: string, userId: string): Trade;
+  
+  // Get active negotiations for user
+  getUserNegotiations(userId: string): Negotiation[];
+  
+  // Translate message
+  translateMessage(message: NegotiationMessage, targetLang: Language): string;
+  
+  // Get AI coaching
+  getAICoaching(negotiation: Negotiation, userRole: 'buyer' | 'seller'): AICoachAdvice;
+}
+```
+
+**Quick Counter Interface:**
+```typescript
+interface QuickCounterActions {
+  // Split the difference
+  splitDifference: () => number; // (buyerOffer + sellerOffer) / 2
+  
+  // Adjust by percentage
+  adjustByPercent: (percent: number) => number; // Current offer ± %
+  
+  // Adjust by fixed amount
+  adjustByAmount: (amount: number) => number; // Current offer ± ₹
+  
+  // Meet at market rate
+  meetAtMarket: () => number; // Use recent avg trade price
+  
+  // Bulk discount calculation
+  bulkDiscount: (quantity: number) => number; // Auto-calculate discount
+}
+```
+
+**AI Coach Interface:**
+```typescript
+interface AICoachAdvice {
+  strategies: NegotiationStrategy[];
+  currentContext: {
+    spreadPercent: number;
+    marketTrend: Momentum;
+    recentAvgPrice: number;
+    yourPosition: 'strong' | 'moderate' | 'weak';
+    timeElapsed: number;
+  };
+  recommendations: {
+    suggestedAction: 'accept' | 'counter' | 'hold_firm' | 'walk_away';
+    suggestedPrice?: number;
+    confidence: number; // 0-100
+    reasoning: string;
+  };
+  quickTips: string[];
 }
 
 interface NegotiationStrategy {
   id: string;
   title: string;
+  approach: 'aggressive' | 'moderate' | 'conservative';
   description: string;
   actionPoints: string[];
-}
-
-interface NegotiationService {
-  // Generate strategies using Claude API
-  generateStrategies(context: NegotiationContext): Promise<NegotiationStrategy[]>;
-  
-  // Get hardcoded quick tips
-  getQuickTips(language: Language): string[];
-  
-  // Translate strategy to target language
-  translateStrategy(strategy: NegotiationStrategy, targetLang: Language): Promise<NegotiationStrategy>;
+  expectedOutcome: string;
+  riskLevel: 'low' | 'medium' | 'high';
 }
 ```
 
-**Claude API Integration:**
+**Claude API Integration for Advanced Coaching:**
 ```typescript
-interface ClaudeRequest {
-  model: string; // claude-3-haiku-20240307 for speed
-  max_tokens: number;
-  messages: Array<{
-    role: 'user' | 'assistant';
-    content: string;
-  }>;
+interface ClaudeNegotiationPrompt {
+  role: 'buyer' | 'seller';
+  commodity: string;
+  yourOffer: number;
+  theirOffer: number;
+  quantity: number;
+  marketContext: {
+    recentAvgPrice: number;
+    trend: Momentum;
+    spread: number;
+  };
+  negotiationHistory: string[]; // Previous messages
+  timeElapsed: number;
 }
 
-interface ClaudeResponse {
-  content: Array<{
-    type: 'text';
-    text: string;
-  }>;
-  stop_reason: string;
-}
-```
+// Prompt template
+const NEGOTIATION_PROMPT = `
+You are an expert mandi negotiation coach helping Indian vendors.
 
-**Prompt Template:**
-```
-You are a negotiation expert helping Indian mandi vendors. Given:
-- Product: {product}
-- Asking Price: ₹{askingPrice}
-- Buyer's Offer: ₹{buyerOffer}
+Context:
+- Role: {role}
+- Product: {commodity}
+- Your current offer: ₹{yourOffer}/{unit}
+- Their current offer: ₹{theirOffer}/{unit}
 - Quantity: {quantity} {unit}
+- Market avg price: ₹{marketAvg}
+- Price trend: {trend}
+- Time negotiating: {timeElapsed} minutes
 
-Generate 3 practical negotiation strategies. Each strategy should:
-1. Have a clear title
-2. Provide 2-3 specific action points
-3. Be culturally appropriate for Indian markets
-4. Focus on win-win outcomes
+Recent conversation:
+{negotiationHistory}
 
-Format as JSON array with structure:
+Provide 3 specific negotiation strategies in JSON format:
 [
   {
     "title": "Strategy name",
+    "approach": "aggressive|moderate|conservative",
     "description": "Brief description",
-    "actionPoints": ["Point 1", "Point 2", "Point 3"]
+    "actionPoints": ["Specific action 1", "Specific action 2", "Specific action 3"],
+    "expectedOutcome": "What might happen",
+    "riskLevel": "low|medium|high"
   }
 ]
+
+Also provide your top recommendation:
+{
+  "suggestedAction": "accept|counter|hold_firm|walk_away",
+  "suggestedPrice": <number or null>,
+  "confidence": <0-100>,
+  "reasoning": "Why this is best move"
+}
+`;
 ```
 
-**Hardcoded Quick Tips (Fallback):**
-1. Start with a counter-offer 15-20% above buyer's offer
-2. Highlight product quality and freshness
-3. Offer bulk discounts for larger quantities
-4. Build rapport by asking about buyer's needs
-5. Be willing to meet halfway on price
-6. Mention market rates to justify your price
+### 5. Market Simulation Engine
 
-### Theme System
-
-**ThemeConfig**
+**Market Simulator:**
 ```typescript
-interface TricolorTheme {
-  colors: {
-    saffron: '#FF9933';
-    white: '#FFFFFF';
-    green: '#138808';
-    navyBlue: '#000080';
-    // Derived colors
-    saffronLight: '#FFB366';
-    greenLight: '#1AAA0A';
-    grayLight: '#F5F5F5';
-    grayDark: '#333333';
+interface MarketSimulator {
+  // Generate initial market state
+  initializeMarket(): void;
+  
+  // Simulate market activity (runs on interval)
+  simulateMarketTick(): void;
+  
+  // Generate random order
+  generateRandomOrder(commodityId: string): Order;
+  
+  // Generate random trade
+  generateRandomTrade(commodityId: string): Trade;
+  
+  // Update price trends
+  updateMomentum(commodityId: string): Momentum;
+  
+  // Simulate price movement
+  simulatePriceWalk(currentPrice: number, volatility: number): number;
+}
+```
+
+**Price Movement Algorithm:**
+```typescript
+function simulatePriceWalk(currentPrice: number, volatility: number): number {
+  // Random walk with drift
+  const drift = 0; // No directional bias
+  const randomChange = (Math.random() - 0.5) * 2; // -1 to 1
+  const percentChange = drift + randomChange * volatility;
+  
+  const newPrice = currentPrice * (1 + percentChange / 100);
+  
+  // Bounds checking (prevent unrealistic swings)
+  const minPrice = currentPrice * 0.95; // Max 5% drop
+  const maxPrice = currentPrice * 1.05; // Max 5% rise
+  
+  return Math.max(minPrice, Math.min(maxPrice, newPrice));
+}
+```
+
+**Order Generation:**
+```typescript
+function generateRandomOrder(commodity: Commodity, marketData: CommodityMarketData): Order {
+  const type = Math.random() > 0.5 ? 'bid' : 'ask';
+  
+  // Base price around mid-market with variation
+  const basePrice = marketData.midMarketPrice || commodity.basePrice;
+  const variation = type === 'bid' ? -0.05 : 0.05; // Bids lower, asks higher
+  const randomSpread = (Math.random() - 0.5) * 0.1; // ±5%
+  
+  const price = Math.round(basePrice * (1 + variation + randomSpread));
+  
+  // Random quantity (realistic ranges)
+  const quantityRanges = {
+    small: [5, 20],
+    medium: [20, 100],
+    large: [100, 500]
   };
-  gradients: {
-    tricolor: 'linear-gradient(to right, #FF9933, #FFFFFF, #138808)';
-    header: 'linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%)';
-  };
-  badges: {
-    translation: 'Unity in Diversity 🇮🇳';
-    priceDiscovery: 'Digital India 🚀';
-    negotiation: 'Atmanirbhar Bharat 💪';
+  const range = quantityRanges.medium;
+  const quantity = Math.floor(Math.random() * (range[1] - range[0])) + range[0];
+  
+  return {
+    id: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    type,
+    commodityId: commodity.id,
+    price,
+    quantity,
+    unit: commodity.unit,
+    totalValue: price * quantity,
+    traderId: type === 'bid' ? `B-${Math.floor(Math.random() * 9999)}` : `S-${Math.floor(Math.random() * 9999)}`,
+    timestamp: Date.now(),
+    expiresAt: Date.now() + (Math.random() * 3600000 + 3600000), // 1-2 hours
+    status: 'active'
   };
 }
 ```
 
-**Tailwind Configuration:**
-```javascript
-// tailwind.config.js
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        saffron: '#FF9933',
-        'saffron-light': '#FFB366',
-        green: '#138808',
-        'green-light': '#1AAA0A',
-        'navy-blue': '#000080',
-      },
-      backgroundImage: {
-        'tricolor': 'linear-gradient(to right, #FF9933, #FFFFFF, #138808)',
-        'tricolor-header': 'linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%)',
-      },
-    },
+**Market Event Simulation:**
+```typescript
+interface MarketEvent {
+  type: 'new_order' | 'order_matched' | 'price_spike' | 'volume_surge';
+  commodityId: string;
+  timestamp: number;
+  data: any;
+}
+
+function simulateMarketTick(state: AppState): void {
+  // Every tick (3-5 seconds):
+  
+  // 1. Generate 1-3 random orders
+  const numOrders = Math.floor(Math.random() * 3) + 1;
+  for (let i = 0; i < numOrders; i++) {
+    const commodity = randomChoice(state.market.commodities);
+    const order = generateRandomOrder(commodity, getCommodityData(commodity.id));
+    addOrderToBook(order);
+  }
+  
+  // 2. Attempt to match orders
+  const matches = findExactMatches();
+  matches.forEach(match => {
+    if (Math.random() > 0.7) { // 30% auto-accept rate
+      acceptMatch(match.id, 'system');
+    }
+  });
+  
+  // 3. Update prices based on recent trades
+  state.market.commodities.forEach(commodity => {
+    const recentTrades = getRecentTrades(commodity.id, 5);
+    if (recentTrades.length > 0) {
+      const avgTradePrice = average(recentTrades.map(t => t.price));
+      updateMarketPrice(commodity.id, avgTradePrice);
+    }
+  });
+  
+  // 4. Update momentum indicators
+  state.market.commodities.forEach(commodity => {
+    const momentum = calculateMomentum(commodity.id);
+    updateMomentum(commodity.id, momentum);
+  });
+  
+  // 5. Expire old orders
+  expireOldOrders();
+  
+  // 6. Trigger notifications
+  checkForUserNearMatches(state.user);
+}
+```
+
+### 6. Translation & Multilingual System
+
+**Enhanced Translation Service:**
+```typescript
+interface TranslationService {
+  // Translate UI text
+  translateUI(key: string, language: Language): string;
+  
+  // Translate user message
+  translateMessage(text: string, sourceLang: Language, targetLang: Language): string;
+  
+  // Translate commodity name
+  translateCommodityName(commodityId: string, language: Language): string;
+  
+  // Get trading phrase
+  getTradingPhrase(phraseId: string, language: Language): string;
+  
+  // Detect language (for auto-translation)
+  detectLanguage(text: string): Language;
+  
+  // Format number/currency for language
+  formatCurrency(amount: number, language: Language): string;
+}
+
+// Trading phrase library (expanded)
+const TRADING_PHRASES = {
+  bid_inquiry: {
+    en: "What's your best price?",
+    hi: "आपकी सबसे अच्छी कीमत क्या है?",
+    te: "మీ ఉత్తమ ధర ఎంత?",
+    ta: "உங்கள் சிறந்த விலை என்ன?",
+    bn: "আপনার সেরা দাম কত?"
   },
-}
+  bulk_discount: {
+    en: "Can you do bulk discount for {quantity}?",
+    hi: "{quantity} के लिए थोक छूट मिल सकती है?",
+    te: "{quantity} కోసం పెద్ద మొత్తం తగ్గింపు ఇవ్వగలరా?",
+    ta: "{quantity} க்கு மொத்த தள்ளுபடி தர முடியுமா?",
+    bn: "{quantity} এর জন্য বাল্ক ছাড় দিতে পারবেন?"
+  },
+  final_offer: {
+    en: "This is my final offer: ₹{price}",
+    hi: "यह मेरा अंतिम प्रस्ताव है: ₹{price}",
+    te: "ఇది నా చివరి ఆఫర్: ₹{price}",
+    ta: "இது என் இறுதி சலுகை: ₹{price}",
+    bn: "এটি আমার চূড়ান্ত অফার: ₹{price}"
+  },
+  deal_accepted: {
+    en: "Deal accepted! Let's finalize.",
+    hi: "सौदा स्वीकार! आइए अंतिम रूप दें।",
+    te: "డీల్ ఆమోదించబడింది! ఫైనలైజ్ చేద్దాం।",
+    ta: "ஒப்பந்தம் ஏற்கப்பட்டது! இறுதி செய்வோம்.",
+    bn: "চুক্তি গৃহীত! চূড়ান্ত করা যাক।"
+  },
+  split_difference: {
+    en: "Let's split the difference - ₹{price}",
+    hi: "आइए अंतर विभाजित करें - ₹{price}",
+    te: "తేడాను విభజిద్దాం - ₹{price}",
+    ta: "வேறுபாட்டைப் பிரிப்போம் - ₹{price}",
+    bn: "পার্থক্য ভাগ করি - ₹{price}"
+  },
+  // ... 20+ more phrases
+};
+
+// UI text translations
+const UI_TRANSLATIONS = {
+  exchange_board: {
+    en: "Exchange Board",
+    hi: "विनिमय बोर्ड",
+    te: "ఎక్స్చేంజ్ బోర్డ్",
+    ta: "பரிமாற்ற பலகை",
+    bn: "এক্সচেঞ্জ বোর্ড"
+  },
+  bid: {
+    en: "BID",
+    hi: "खरीद",
+    te: "కొనుగోలు",
+    ta: "வாங்கு",
+    bn: "ক্রয়"
+  },
+  ask: {
+    en: "ASK",
+    hi: "बेचना",
+    te: "అమ్మకం",
+    ta: "விற்பனை",
+    bn: "বিক্রয়"
+  },
+  // ... complete UI vocabulary
+};
 ```
 
-### LocalStorage Schema
+### 7. Notification System
 
-**Translation History:**
+**Notification Types:**
 ```typescript
-// Key: mandimind_translation_history
-{
-  version: 1,
-  entries: TranslationEntry[]
+interface Notification {
+  id: string;
+  type: 'match' | 'near_match' | 'price_alert' | 'order_expiring' | 'deal_closed';
+  priority: 'high' | 'medium' | 'low';
+  title: string;
+  message: string;
+  actionLabel?: string;
+  actionHandler?: () => void;
+  timestamp: number;
+  read: boolean;
+  expiresAt?: number; // Auto-dismiss time
 }
-```
 
-**User Preferences:**
-```typescript
-// Key: mandimind_preferences
-{
-  version: 1,
-  lastSelectedLanguage: Language,
-  lastSelectedTab: number
+interface NotificationService {
+  // Create notification
+  notify(notification: Omit<Notification, 'id' | 'timestamp' | 'read'>): void;
+  
+  // Get user notifications
+  getNotifications(userId: string): Notification[];
+  
+  // Mark as read
+  markRead(notificationId: string): void;
+  
+  // Clear all
+  clearAll(userId: string): void;
+  
+  // Subscribe to new notifications
+  subscribe(callback: (notification: Notification) => void): UnsubscribeFn;
+}
+
+// Notification triggers
+function checkNotifications(state: AppState): void {
+  const user = state.user;
+  
+  // Check for exact matches
+  user.activeOrders.forEach(order => {
+    const matches = findExactMatches().filter(m => 
+      m.bidOrder.id === order.id || m.askOrder.id === order.id
+    );
+    
+    matches.forEach(match => {
+      notify({
+        type: 'match',
+        priority: 'high',
+        title: '🎯 EXACT MATCH FOUND!',
+        message: `Your ${order.type} for ${order.commodity.name} matched at ₹${match.matchPrice}`,
+        actionLabel: 'View Deal',
+        actionHandler: () => openNegotiation(match.id)
+      });
+    });
+  });
+  
+  // Check for near matches (within 5%)
+  user.activeOrders.forEach(order => {
+    const nearMatches = findNearMatches(order.id, 0.05);
+    
+    nearMatches.forEach(nearMatch => {
+      notify({
+        type: 'near_match',
+        priority: 'medium',
+        title: '🔔 Close Match Available',
+        message: `${nearMatch.type === 'bid' ? 'Buyer' : 'Seller'} willing to ${nearMatch.type} at ₹${nearMatch.price} (you: ₹${order.price})`,
+        actionLabel: 'Counter Offer',
+        actionHandler: () => quickCounter(order.id, nearMatch.id)
+      });
+    });
+  });
+  
+  // Check for expiring orders
+  user.activeOrders.forEach(order => {
+    const timeLeft = order.expiresAt - Date.now();
+    if (timeLeft < 600000 && timeLeft > 0) { // < 10 minutes
+      notify({
+        type: 'order_expiring',
+        priority: 'low',
+        title: '⏰ Order Expiring Soon',
+        message: `Your ${order.type} for ${order.commodity.name} expires in ${Math.floor(timeLeft / 60000)} minutes`,
+        actionLabel: 'Extend',
+        actionHandler: () => extendOrder(order.id)
+      });
+    }
+  });
+  
+  // Price alerts for watched commodities
+  user.watchlist.forEach(commodityId => {
+    const data = getCommodityData(commodityId);
+    const priceChange = calculatePriceChange(commodityId, '1h');
+    
+    if (Math.abs(priceChange) > 10) { // >10% move
+      notify({
+        type: 'price_alert',
+        priority: 'medium',
+        title: '📊 Significant Price Movement',
+        message: `${data.commodity.name} ${priceChange > 0 ? 'up' : 'down'} ${Math.abs(priceChange).toFixed(1)}% in last hour`,
+        actionLabel: 'View Market',
+        actionHandler: () => viewOrderBook(commodityId)
+      });
+    }
+  });
 }
 ```
 
 ## Data Models
 
-### Translation Models
+### Enhanced Commodity Model
 
 ```typescript
-// Mandi phrases database
-const MANDI_PHRASES: MandiPhrase[] = [
+const COMMODITIES: Commodity[] = [
   {
-    id: 'greeting',
-    en: 'Good morning! How can I help you?',
-    hi: 'सुप्रभात! मैं आपकी कैसे मदद कर सकता हूं?',
-    te: 'శుభోదయం! నేను మీకు ఎలా సహాయం చేయగలను?',
-    ta: 'காலை வணக்கம்! நான் உங்களுக்கு எப்படி உதவ முடியும்?',
-    bn: 'সুপ্রভাত! আমি আপনাকে কিভাবে সাহায্য করতে পারি?'
+    id: 'rice',
+    name: 'Rice',
+    nameHi: 'चावल',
+    nameTe: 'బియ్యం',
+    nameTa: 'அரிசி',
+    nameBn: 'চাল',
+    unit: 'kg',
+    basePrice: 50,
+    category: 'grains',
+    icon: '🍚',
+    volatility: 0.02 // 2% typical price swing
   },
   {
-    id: 'price_inquiry',
-    en: 'What is the price per kg?',
-    hi: 'प्रति किलो कीमत क्या है?',
-    te: 'కిలో ధర ఎంత?',
-    ta: 'கிலோ விலை என்ன?',
-    bn: 'কিলো প্রতি দাম কত?'
+    id: 'tomato',
+    name: 'Tomatoes',
+    nameHi: 'टमाटर',
+    nameTe: 'టమోటాలు',
+    nameTa: 'தக்காளி',
+    nameBn: 'টমেটো',
+    unit: 'kg',
+    basePrice: 40,
+    category: 'vegetables',
+    icon: '🍅',
+    volatility: 0.08 // 8% - more volatile
   },
+  // ... 15-20 total commodities
   {
-    id: 'quality_check',
-    en: 'This is fresh and high quality',
-    hi: 'यह ताजा और उच्च गुणवत्ता का है',
-    te: 'ఇది తాజా మరియు అధిక నాణ్యత',
-    ta: 'இது புதிய மற்றும் உயர் தரம்',
-    bn: 'এটি তাজা এবং উচ্চ মানের'
-  },
-  {
-    id: 'bulk_discount',
-    en: 'I can offer a discount for bulk purchase',
-    hi: 'मैं थोक खरीद पर छूट दे सकता हूं',
-    te: 'నేను పెద్ద మొత్తంలో కొనుగోలుకు తగ్గింపు ఇవ్వగలను',
-    ta: 'மொத்த வாங்குதலுக்கு தள்ளுபடி தர முடியும்',
-    bn: 'আমি বাল্ক ক্রয়ের জন্য ছাড় দিতে পারি'
-  },
-  {
-    id: 'payment_terms',
-    en: 'Cash or digital payment accepted',
-    hi: 'नकद या डिजिटल भुगतान स्वीकार किया जाता है',
-    te: 'నగదు లేదా డిజిటల్ చెల్లింపు అంగీకరించబడుతుంది',
-    ta: 'பணம் அல்லது டிஜிட்டல் பணம் ஏற்கப்படும்',
-    bn: 'নগদ বা ডিজিটাল পেমেন্ট গৃহীত'
-  },
-  {
-    id: 'negotiation_start',
-    en: 'Let us discuss the price',
-    hi: 'आइए कीमत पर चर्चा करें',
-    te: 'ధర గురించి చర్చిద్దాం',
-    ta: 'விலையை பற்றி பேசுவோம்',
-    bn: 'আসুন দাম নিয়ে আলোচনা করি'
-  },
-  {
-    id: 'final_offer',
-    en: 'This is my best price',
-    hi: 'यह मेरी सबसे अच्छी कीमत है',
-    te: 'ఇది నా ఉత్తమ ధర',
-    ta: 'இது என் சிறந்த விலை',
-    bn: 'এটি আমার সেরা দাম'
-  },
-  {
-    id: 'thank_you',
-    en: 'Thank you for your business!',
-    hi: 'आपके व्यवसाय के लिए धन्यवाद!',
-    te: 'మీ వ్యాపారానికి ధన్యవాదాలు!',
-    ta: 'உங்கள் வணிகத்திற்கு நன்றி!',
-    bn: 'আপনার ব্যবসার জন্য ধন্যবাদ!'
-  },
-  {
-    id: 'delivery',
-    en: 'Delivery available within city',
-    hi: 'शहर के भीतर डिलीवरी उपलब्ध है',
-    te: 'నగరంలో డెలివరీ అందుబాటులో ఉంది',
-    ta: 'நகரத்திற்குள் டெலிவரி கிடைக்கும்',
-    bn: 'শহরের মধ্যে ডেলিভারি উপলব্ধ'
-  },
-  {
-    id: 'minimum_order',
-    en: 'Minimum order is 5 kg',
-    hi: 'न्यूनतम आदेश 5 किलो है',
-    te: 'కనీస ఆర్డర్ 5 కిలోలు',
-    ta: 'குறைந்தபட்ச ஆர்டர் 5 கிலோ',
-    bn: 'ন্যূনতম অর্ডার 5 কেজি'
+    id: 'mango',
+    name: 'Mangoes',
+    nameHi: 'आम',
+    nameTe: 'మామిడి',
+    nameTa: 'மாம்பழம்',
+    nameBn: 'আম',
+    unit: 'kg',
+    basePrice: 80,
+    category: 'fruits',
+    icon: '🥭',
+    volatility: 0.05,
+    seasonal: true,
+    peakMonths: [4, 5, 6] // Apr-Jun
   }
 ];
 ```
 
-### Commodity Models
+### LocalStorage Schema
 
 ```typescript
-const COMMODITIES: Commodity[] = [
-  { id: 'rice', name: 'Rice', nameHi: 'चावल', nameTe: 'బియ్యం', nameTa: 'அரிசி', nameBn: 'চাল', unit: 'kg', basePrice: 50 },
-  { id: 'wheat', name: 'Wheat', nameHi: 'गेहूं', nameTe: 'గోధుమ', nameTa: 'கோதுமை', nameBn: 'গম', unit: 'kg', basePrice: 30 },
-  { id: 'tomato', name: 'Tomatoes', nameHi: 'टमाटर', nameTe: 'టమోటాలు', nameTa: 'தக்காளி', nameBn: 'টমেটো', unit: 'kg', basePrice: 40 },
-  { id: 'onion', name: 'Onions', nameHi: 'प्याज', nameTe: 'ఉల్లిపాయలు', nameTa: 'வெங்காயம்', nameBn: 'পেঁয়াজ', unit: 'kg', basePrice: 35 },
-  { id: 'potato', name: 'Potatoes', nameHi: 'आलू', nameTe: 'బంగాళాదుంపలు', nameTa: 'உருளைக்கிழங்கு', nameBn: 'আলু', unit: 'kg', basePrice: 25 },
-  { id: 'mango', name: 'Mangoes', nameHi: 'आम', nameTe: 'మామిడి', nameTa: 'மாம்பழம்', nameBn: 'আম', unit: 'kg', basePrice: 80 },
-  { id: 'banana', name: 'Bananas', nameHi: 'केला', nameTe: 'అరటిపండ్లు', nameTa: 'வாழைப்பழம்', nameBn: 'কলা', unit: 'dozen', basePrice: 40 },
-  { id: 'apple', name: 'Apples', nameHi: 'सेब', nameTe: 'ఆపిల్', nameTa: 'ஆப்பிள்', nameBn: 'আপেল', unit: 'kg', basePrice: 120 },
-  { id: 'milk', name: 'Milk', nameHi: 'दूध', nameTe: 'పాలు', nameTa: 'பால்', nameBn: 'দুধ', unit: 'liter', basePrice: 60 },
-  { id: 'egg', name: 'Eggs', nameHi: 'अंडे', nameTe: 'గుడ్లు', nameTa: 'முட்டை', nameBn: 'ডিম', unit: 'dozen', basePrice: 70 },
-  { id: 'chicken', name: 'Chicken', nameHi: 'मुर्गी', nameTe: 'కోడి', nameTa: 'கோழி', nameBn: 'মুরগি', unit: 'kg', basePrice: 180 },
-  { id: 'lentil', name: 'Lentils', nameHi: 'दाल', nameTe: 'పప్పు', nameTa: 'பருப்பு', nameBn: 'ডাল', unit: 'kg', basePrice: 90 },
-  { id: 'sugar', name: 'Sugar', nameHi: 'चीनी', nameTe: 'చక్కెర', nameTa: 'சர்க்கரை', nameBn: 'চিনি', unit: 'kg', basePrice: 45 },
-  { id: 'tea', name: 'Tea', nameHi: 'चाय', nameTe: 'టీ', nameTa: 'தேநீர்', nameBn: 'চা', unit: 'kg', basePrice: 400 },
-  { id: 'coffee', name: 'Coffee', nameHi: 'कॉफी', nameTe: 'కాఫీ', nameTa: 'காபி', nameBn: 'কফি', unit: 'kg', basePrice: 600 },
-  { id: 'turmeric', name: 'Turmeric', nameHi: 'हल्दी', nameTe: 'పసుపు', nameTa: 'மஞ்சள்', nameBn: 'হলুদ', unit: 'kg', basePrice: 150 },
-  { id: 'chili', name: 'Chili', nameHi: 'मिर्च', nameTe: 'మిరపకాయ', nameTa: 'மிளகாய்', nameBn: 'মরিচ', unit: 'kg', basePrice: 200 },
-  { id: 'coriander', name: 'Coriander', nameHi: 'धनिया', nameTe: 'కొత్తిమీర', nameTa: 'கொத்தமல்லி', nameBn: 'ধনে', unit: 'kg', basePrice: 80 }
-];
-```
-
-### Price Generation Algorithm
-
-```typescript
-function generatePriceData(commodity: Commodity): PriceData {
-  const variation = 0.10; // ±10%
-  const avgPrice = commodity.basePrice;
-  const minPrice = Math.round(avgPrice * (1 - variation));
-  const maxPrice = Math.round(avgPrice * (1 + variation));
-  
-  // Random trend
-  const rand = Math.random();
-  const trend = rand < 0.4 ? 'up' : rand < 0.8 ? 'down' : 'stable';
-  
-  return {
-    commodity,
-    minPrice,
-    avgPrice,
-    maxPrice,
-    trend,
-    lastUpdated: Date.now()
+// Key: mandimind_user_profile
+interface UserProfile {
+  id: string;
+  language: Language;
+  activeOrders: string[]; // order IDs
+  watchlist: string[]; // commodity IDs
+  tradeHistory: string[]; // trade IDs
+  preferences: {
+    autoAcceptMatches: boolean;
+    notificationPrefs: NotificationPrefs;
+    defaultOrderExpiry: number; // milliseconds
   };
+}
+
+// Key: mandimind_orders
+interface OrdersStore {
+  version: 1;
+  orders: Order[];
+  lastCleanup: number; // timestamp
+}
+
+// Key: mandimind_trades
+interface TradesStore {
+  version: 1;
+  trades: Trade[];
+  lastCleanup: number;
+}
+
+// Key: mandimind_negotiations
+interface NegotiationsStore {
+  version: 1;
+  negotiations: Negotiation[];
+  lastCleanup: number;
+}
+
+// Key: mandimind_market_state
+interface MarketStateStore {
+  version: 1;
+  lastUpdate: number;
+  orderBooks: { [commodityId: string]: OrderBook };
+  recentTrades: Trade[];
+  marketStats: MarketStatistics;
 }
 ```
 
+## UI/UX Design Patterns
 
-## Correctness Properties
+### Exchange Board Layout
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+```
+┌─────────────────────────────────────────────────────────┐
+│  🇮🇳 MandiMind Exchange - 77th Republic Day Special     │
+│  Live Ticker: 1,247 trades today | ₹12.3L volume       │
+└─────────────────────────────────────────────────────────┘
 
-### Property Reflection
+┌─────────────────────────────────────────────────────────┐
+│  [Exchange Board] [My Orders] [Dashboard]               │
+└─────────────────────────────────────────────────────────┘
 
-After analyzing all acceptance criteria, I identified several opportunities to consolidate redundant properties:
+🔥 HOT DEALS (Narrow Spread < 5%)
+┌──────────────┬──────────────┬──────────────┐
+│ Tomatoes     │ Onions       │ Potatoes     │
+│ BID ₹38      │ BID ₹32      │ BID ₹23      │
+│ ASK ₹40 [2%] │ ASK ₹34 [6%] │ ASK ₹24 [4%] │
+└──────────────┴──────────────┴──────────────┘
 
-- **Translation persistence (1.4) and retrieval (1.5)**: These can be combined into a single round-trip property
-- **Price calculation (2.3, 10.3)**: These are duplicate requirements and should be one property
-- **Input validation (10.1, 10.4)**: These can be combined into a comprehensive input validation property
-- **Clipboard functionality (1.6, 9.1)**: These are the same requirement and should be one property
-- **Color coding consistency (4.1, 5.4, 5.5)**: These can be combined into a theme consistency property
+ALL MARKETS
+┌─────────────────────────────────────────────┐
+│ Rice 🍚                              ↑      │
+│ BID ₹48/kg ← ₹4 SPREAD → ASK ₹52/kg       │
+│ 12 bids | 8 asks | Vol: 2,450 kg          │
+│ Last: ₹50/kg @ 2:15 PM                     │
+│ [Quick Buy] [Quick Sell] [View Book]       │
+├─────────────────────────────────────────────┤
+│ Tomatoes 🍅                          ↑↑    │
+│ BID ₹38/kg ← ₹2 SPREAD → ASK ₹40/kg       │
+│ 18 bids | 15 asks | Vol: 3,200 kg         │
+│ Last: ₹39/kg @ 2:18 PM   🔥 HOT DEAL      │
+│ [Quick Buy] [Quick Sell] [View Book]       │
+├─────────────────────────────────────────────┤
+│ ... (15-20 commodities total)              │
+└─────────────────────────────────────────────┘
+```
 
-### Translation Module Properties
+### Order Book Layout
 
-**Property 1: Language selection state consistency**
-*For any* supported language (Hindi, Telugu, Tamil, Bengali, English), when selected, the UI state should reflect that language as the active selection.
-**Validates: Requirements 1.1**
+```
+┌─────────────────────────────────────────────────────────┐
+│  ← Back to Exchange    TOMATOES 🍅    [Post Order]      │
+│  Mid-Market: ₹39/kg | Spread: ₹2 (5.1%) | Vol: 3.2T    │
+└─────────────────────────────────────────────────────────┘
 
-**Property 2: Translation function completeness**
-*For any* non-empty input text and any target language, the translation function should return a non-empty translated string.
-**Validates: Requirements 1.2**
+MARKET DEPTH CHART
+┌─────────────────────────────────────────────────────────┐
+│                     ₹39                                 │
+│  ████████████████░░│░░████████████                     │
+│  BUY VOLUME         │        SELL VOLUME                │
+│  (Green bars ←)     │     (→ Red bars)                 │
+└─────────────────────────────────────────────────────────┘
 
-**Property 3: Phrase lookup correctness**
-*For any* mandi phrase ID and any supported language, retrieving the phrase should return the correct translation for that language.
-**Validates: Requirements 1.3**
+ORDER BOOK
+┌──────────────────────┬──────────────────────┐
+│   BIDS (Buy Orders)  │  ASKS (Sell Orders)  │
+├──────────────────────┼──────────────────────┤
+│ ₹38/kg  50kg  ₹1900  │  ₹40/kg  30kg  ₹1200│
+│ B-1234  2m ago       │  S-5678  5m ago      │
+│ ▓▓▓▓▓▓▓▓░░           │  ▓▓▓▓░░              │
+├──────────────────────┼──────────────────────┤
+│ ₹37/kg  100kg ₹3700  │  ₹41/kg  75kg  ₹3075│
+│ B-2345  8m ago       │  S-6789  12m ago     │
+│ ▓▓▓▓▓▓▓▓▓▓▓▓▓░       │  ▓▓▓▓▓▓▓▓░░          │
+├──────────────────────┼──────────────────────┤
+│ ₹36/kg  25kg  ₹900   │  ₹42/kg  40kg  ₹1680│
+│ B-3456  15m ago      │  S-7890  20m ago     │
+│ ▓▓▓▓░░               │  ▓▓▓▓▓░░             │
+└──────────────────────┴──────────────────────┘
 
-**Property 4: Translation persistence round-trip**
-*For any* translation entry, after storing it to localStorage and retrieving the history, the entry should appear in the retrieved history with all fields intact (source text, source language, target language, translated text, timestamp).
-**Validates: Requirements 1.4, 1.5, 6.1, 6.4**
+QUICK ORDER ENTRY
+┌─────────────────────────────────────────────────────────┐
+│ [BID] [ASK]                                             │
+│ Price: [₹39] /kg  💡 Suggested: ₹39 (mid-market)       │
+│ Qty:   [50] kg                                          │
+│ Total: ₹1,950                                           │
+│         [POST ORDER]                                    │
+└─────────────────────────────────────────────────────────┘
 
-**Property 5: History chronological ordering**
-*For any* set of translation entries with different timestamps, when displayed, they should be ordered with the newest timestamp first.
-**Validates: Requirements 6.3**
+NEAR MATCHES FOR YOU
+┌─────────────────────────────────────────────────────────┐
+│ 🎯 S-5678 selling at ₹40 - just ₹1 above mid-market    │
+│    [Counter at ₹39.50] [Accept ₹40] [Negotiate]        │
+└─────────────────────────────────────────────────────────┘
+```
 
-**Property 6: Clipboard copy functionality**
-*For any* translated text, after triggering the copy action, the system clipboard should contain that exact text.
-**Validates: Requirements 1.6, 9.1**
+### Negotiation Room Layout
 
-**Property 7: Copy confirmation feedback**
-*For any* successful copy operation, a visual confirmation message should be displayed to the user.
-**Validates: Requirements 9.2**
+```
+┌─────────────────────────────────────────────────────────┐
+│  Negotiating: Tomatoes 🍅                    [Language▾]│
+│  You (Seller): ₹40/kg ← ₹2 GAP → Buyer: ₹38/kg        │
+│  Quantity: 50 kg | Started: 3m ago                      │
+└─────────────────────────────────────────────────────────┘
 
-**Property 8: Copy availability for all outputs**
-*For any* translated output (dynamic translation, mandi phrase, or negotiation strategy), a copy button should be available.
-**Validates: Requirements 9.3**
+MESSAGES
+┌─────────────────────────────────────────────────────────┐
+│ [Buyer] 3m ago                                   [हिंदी]│
+│ "₹38 is my best offer for 50kg"                        │
+│ "50kg के लिए ₹38 मेरा सबसे अच्छा प्रस्ताव है"         │
+├─────────────────────────────────────────────────────────┤
+│ [You] 2m ago                                     [తెలుగు]│
+│ "Can you do ₹39? Quality is excellent"                 │
+│ "మీరు ₹39 చేయగలరా? నాణ్యత అద్భుతమైనది"               │
+├─────────────────────────────────────────────────────────┤
+│ [AI Coach] 1m ago                                       │
+│ 💡 Market avg is ₹39.50 - your counter is reasonable   │
+│    Buyer likely to accept or meet halfway at ₹38.50    │
+└─────────────────────────────────────────────────────────┘
 
-**Property 9: Clipboard fallback mechanism**
-*For any* environment where the Clipboard API is unavailable, the system should provide an alternative text selection mechanism.
-**Validates: Requirements 9.4**
+QUICK ACTIONS
+┌─────────────────────────────────────────────────────────┐
+│ [Split Difference: ₹39] [Accept ₹38] [Counter: ₹39.50] │
+│ [±₹1] [±₹5] [±10%]                                      │
+└─────────────────────────────────────────────────────────┘
 
-### Price Discovery Module Properties
+AI NEGOTIATION COACH
+┌─────────────────────────────────────────────────────────┐
+│ 🤖 Strategy Suggestion (85% confidence)                 │
+│                                                         │
+│ ✅ MODERATE APPROACH (Recommended)                      │
+│ • Counter at ₹39 (split the difference)                │
+│ • Emphasize product quality                            │
+│ • Offer small bulk discount if buyer increases qty     │
+│ Expected: Deal closes at ₹38.50-₹39                    │
+│                                                         │
+│ [View 2 More Strategies]                               │
+└─────────────────────────────────────────────────────────┘
 
-**Property 10: Price variation bounds**
-*For any* commodity with base price P, the generated minimum price should be within [0.9P, P] and maximum price should be within [P, 1.1P].
-**Validates: Requirements 2.1, 2.5**
+MESSAGE INPUT
+┌─────────────────────────────────────────────────────────┐
+│ [Type message in Telugu...                            ]│
+│ Quick phrases: ["Best price?"] ["Deal!"] ["Final₹39"] │
+│                                             [Send]      │
+└─────────────────────────────────────────────────────────┘
+```
 
-**Property 11: Trend indicator presence**
-*For any* commodity with price data, the display should include exactly one trend indicator (↑, ↓, or →) matching the trend value.
-**Validates: Requirements 2.2**
+## Theme Implementation
 
-**Property 12: Price calculation correctness**
-*For any* positive quantity Q and price P, the calculated total should equal Q × P.
-**Validates: Requirements 2.3, 10.2, 10.3**
+### Tricolor Design System
 
-**Property 13: Price color coding logic**
-*For any* price within a commodity's min-max range, the color should be red if price ≤ (min + 0.33 × range), yellow if price is in the middle third, and green if price ≥ (min + 0.67 × range).
-**Validates: Requirements 2.4**
+```typescript
+const EXCHANGE_THEME = {
+  colors: {
+    // Primary tricolor
+    saffron: '#FF9933',
+    white: '#FFFFFF',
+    green: '#138808',
+    navyBlue: '#000080',
+    
+    // Semantic colors
+    buy: '#138808',    // Green for bids/buying
+    sell: '#FF9933',   // Saffron for asks/selling
+    neutral: '#000080', // Navy for informational
+    
+    // UI states
+    success: '#138808',
+    warning: '#FFB366',
+    danger: '#FF4444',
+    
+    // Backgrounds
+    bgLight: '#FAFAFA',
+    bgWhite: '#FFFFFF',
+    bgDark: '#1A1A1A',
+    
+    // Text
+    textPrimary: '#1A1A1A',
+    textSecondary: '#666666',
+    textLight: '#999999',
+  },
+  
+  gradients: {
+    header: 'linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%)',
+    buyButton: 'linear-gradient(135deg, #138808 0%, #1AAA0A 100%)',
+    sellButton: 'linear-gradient(135deg, #FF9933 0%, #FFB366 100%)',
+    hotDeal: 'linear-gradient(90deg, #FF9933 0%, #138808 100%)',
+    celebration: 'linear-gradient(45deg, #FF9933, #FFFFFF, #138808)',
+  },
+  
+  animations: {
+    hotDealPulse: 'pulse 2s ease-in-out infinite',
+    matchFound: 'bounce 0.5s',
+    priceUpdate: 'flash 0.3s',
+    dealClosed: 'confetti 1s',
+  }
+};
 
-**Property 14: Input validation for quantities**
-*For any* quantity input, the system should accept it if and only if it is a positive number; zero or negative values should trigger an error message.
-**Validates: Requirements 10.1, 10.4**
+// Tailwind config
+module.exports = {
+  theme: {
+    extend: {
+      colors: EXCHANGE_THEME.colors,
+      backgroundImage: EXCHANGE_THEME.gradients,
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-once': 'bounce 0.5s',
+      },
+    },
+  },
+};
+```
 
-**Property 15: Currency formatting consistency**
-*For any* calculated total, the displayed value should include the rupee symbol (₹) and be formatted to 2 decimal places.
-**Validates: Requirements 10.5**
+### Visual Indicators
 
-**Property 16: Mock data locality**
-*For any* price data request, the data should be generated locally without making external network calls.
-**Validates: Requirements 7.2**
+```typescript
+// Spread color coding
+function getSpreadColor(spreadPercent: number): string {
+  if (spreadPercent < 5) return 'text-green-600'; // Hot deal
+  if (spreadPercent < 15) return 'text-yellow-600'; // Normal
+  return 'text-red-600'; // Wide spread
+}
 
-### Negotiation Assistant Properties
+// Momentum indicators
+function getMomentumIcon(momentum: Momentum): string {
+  const icons = {
+    surge_up: '↑↑',
+    up: '↑',
+    stable: '→',
+    down: '↓',
+    surge_down: '↓↓'
+  };
+  return icons[momentum];
+}
 
-**Property 17: Context parameter completeness**
-*For any* negotiation request, the system should accept it if and only if all four parameters (product, asking price, buyer's offer, quantity) are provided and valid.
-**Validates: Requirements 3.1**
+function getMomentumColor(momentum: Momentum): string {
+  const colors = {
+    surge_up: 'text-green-700',
+    up: 'text-green-500',
+    stable: 'text-gray-500',
+    down: 'text-red-500',
+    surge_down: 'text-red-700'
+  };
+  return colors[momentum];
+}
 
-**Property 18: Strategy generation count**
-*For any* valid negotiation context when Claude API is available and responds successfully, exactly 3 unique strategies should be generated.
-**Validates: Requirements 3.2**
+// Hot deal animation
+const hotDealStyle = {
+  border: '2px solid transparent',
+  backgroundImage: 'linear-gradient(white, white), linear-gradient(90deg, #FF9933, #138808)',
+  backgroundOrigin: 'border-box',
+  backgroundClip: 'padding-box, border-box',
+  animation: 'pulse-slow 3s infinite',
+};
+```
 
-**Property 19: Strategy translation**
-*For any* generated strategy and any target language, the strategy should be translated to that language while preserving the structure (title, description, action points).
-**Validates: Requirements 3.3**
+## Performance Optimization
 
-**Property 20: Fallback tips on API failure**
-*For any* negotiation request when Claude API is unavailable or fails, the system should display 5-6 hardcoded negotiation tips.
-**Validates: Requirements 3.4**
+### Efficient Rendering
 
-### Theme and UI Properties
+1. **Virtual Scrolling** for Order Books
+   - Only render visible orders (20-30 at a time)
+   - Use `react-window` or custom virtualization
+   - Lazy load order details on hover
 
-**Property 21: Tricolor theme consistency**
-*For any* themed UI element (button, heading, accent), it should use one of the official tricolor colors (Saffron #FF9933, Green #138808, Navy Blue #000080, or White #FFFFFF).
-**Validates: Requirements 4.1, 5.4, 5.5**
+2. **Debounced Market Updates**
+   - Batch multiple order updates
+   - Update UI at max 60fps
+   - Use `requestAnimationFrame` for smooth animations
 
-**Property 22: Responsive layout constraint**
-*For any* viewport width greater than 1200px, the main content container width should be constrained to a maximum of 1200px.
-**Validates: Requirements 5.2**
+3. **Memoization**
+   - Memoize expensive calculations (depth charts, spread %)
+   - Use React.memo for CommodityCard components
+   - Cache translated strings
 
-**Property 23: Mobile-first responsiveness**
-*For any* viewport width from 320px to 1920px, all content should be readable and interactive without horizontal scrolling.
-**Validates: Requirements 5.1**
+4. **LocalStorage Optimization**
+   - Compress old data
+   - Limit history to 500 trades, 200 orders
+   - Periodic cleanup of expired orders
 
-**Property 24: Language display format**
-*For any* language option in the selector, it should display both the English name and the native script name.
-**Validates: Requirements 8.2**
+### Code Splitting
 
-**Property 25: UI language separation**
-*For any* UI label or button text, it should be in English, while user-generated or translated content should be in the selected target language.
-**Validates: Requirements 8.4**
+```typescript
+// Lazy load heavy components
+const OrderBookView = lazy(() => import('./components/OrderBookView'));
+const NegotiationRoom = lazy(() => import('./components/NegotiationRoom'));
+const DepthChart = lazy(() => import('./components/DepthChart'));
 
-### Data Integrity Properties
+// Preload on hover
+<CommodityCard
+  onMouseEnter={() => preload(OrderBookView)}
+  onClick={() => navigate('/orderbook')}
+/>
+```
 
-**Property 26: Translation entry completeness**
-*For any* translation stored in localStorage, it should contain all required fields: id, sourceText, sourceLang, targetLang, translatedText, and timestamp.
-**Validates: Requirements 6.4**
+## Testing Strategy (Enhanced)
 
-**Property 27: LocalStorage initialization**
-*For any* application load, if translation history exists in localStorage, it should be retrieved and made available to the UI.
-**Validates: Requirements 6.2**
+### Property-Based Tests for Trading Logic
 
-## Error Handling
-
-### Translation Module Errors
-
-**Empty Input Handling:**
-- When user attempts to translate empty or whitespace-only text, display message: "Please enter text to translate"
-- Do not create history entry for failed translations
-- Keep UI in ready state for next input
-
-**LocalStorage Quota Exceeded:**
-- When localStorage is full, remove oldest 10 entries and retry
-- If still failing, display warning: "Storage full. Some history may be lost."
-- Continue allowing new translations (just don't persist)
-
-**Clipboard API Failure:**
-- Fall back to document.execCommand('copy') for older browsers
-- If both fail, display text in a modal with "Select and copy manually" instruction
-- Log error to console for debugging
-
-### Price Discovery Module Errors
-
-**Invalid Quantity Input:**
-- When quantity is zero, negative, or non-numeric, display: "Please enter a valid positive quantity"
-- Disable calculate button until valid input provided
-- Clear previous calculation results
-
-**Missing Price Selection:**
-- When user tries to calculate without selecting price type, highlight price cards with animation
-- Display message: "Please select a price (Min, Avg, or Max)"
-
-### Negotiation Assistant Errors
-
-**Incomplete Context:**
-- When any of the 4 required fields is missing, highlight empty fields in red
-- Display message: "Please fill in all fields: product, asking price, buyer's offer, and quantity"
-- Disable generate button until all fields valid
-
-**Claude API Errors:**
-- Network timeout (>10s): Fall back to hardcoded tips immediately
-- API error response: Log error, show hardcoded tips with message "Using offline tips"
-- Invalid API key: Show hardcoded tips with message "AI features unavailable"
-- Rate limit exceeded: Show hardcoded tips with message "Too many requests. Try again later."
-
-**Invalid Price Values:**
-- When asking price or buyer offer is zero or negative, display: "Prices must be positive numbers"
-- When buyer offer > asking price, display warning: "Buyer's offer is higher than asking price. Are you sure?"
-
-### General Error Handling
-
-**Network Errors:**
-- Only Claude API requires network; all other features work offline
-- Display connection status indicator when API calls are in progress
-- Timeout all API calls after 10 seconds
-
-**Browser Compatibility:**
-- Detect missing Clipboard API and use fallback automatically
-- Detect missing localStorage and show warning: "History features disabled"
-- Test for ES6 support; show upgrade message if missing
-
-**Data Corruption:**
-- When localStorage data is malformed, clear it and start fresh
-- Log corruption details to console
-- Display message: "History reset due to data error"
-
-## Testing Strategy
-
-### Overview
-
-MandiMind uses a dual testing approach combining unit tests for specific examples and edge cases with property-based tests for universal correctness properties. This ensures both concrete functionality and general correctness across all inputs.
-
-### Property-Based Testing
-
-**Library Selection:**
-- **JavaScript/TypeScript**: Use `fast-check` library for property-based testing
-- Minimum 100 iterations per property test to ensure comprehensive input coverage
-- Each property test must reference its design document property number
-
-**Test Tagging Format:**
-```javascript
-// Feature: mandimind, Property 4: Translation persistence round-trip
-test('translation round-trip preserves all fields', () => {
+```typescript
+// Property: Order matching is fair
+test('matched trades use fair mid-price', () => {
   fc.assert(
     fc.property(
       fc.record({
-        sourceText: fc.string({ minLength: 1 }),
-        sourceLang: fc.constantFrom('en', 'hi', 'te', 'ta', 'bn'),
-        targetLang: fc.constantFrom('en', 'hi', 'te', 'ta', 'bn'),
-        translatedText: fc.string({ minLength: 1 })
-      }),
-      (entry) => {
-        // Store to localStorage
-        saveTranslation(entry);
-        
-        // Retrieve from localStorage
-        const history = getHistory();
-        
-        // Should find entry with all fields intact
-        const found = history.find(h => 
-          h.sourceText === entry.sourceText &&
-          h.sourceLang === entry.sourceLang &&
-          h.targetLang === entry.targetLang &&
-          h.translatedText === entry.translatedText
-        );
-        
-        expect(found).toBeDefined();
-        expect(found.timestamp).toBeGreaterThan(0);
+        bidPrice: fc.float({ min: 10, max: 100 }),
+        askPrice: fc.float({ min: 10, max: 100 })
+      }).filter(({bidPrice, askPrice}) => bidPrice >= askPrice),
+      ({bidPrice, askPrice}) => {
+        const match = createMatch(bidPrice, askPrice);
+        const midPrice = (bidPrice + askPrice) / 2;
+        expect(match.matchPrice).toBe(midPrice);
       }
-    ),
-    { numRuns: 100 }
+    )
+  );
+});
+
+// Property: Spread calculation is accurate
+test('spread always equals ask minus bid', () => {
+  fc.assert(
+    fc.property(
+      fc.float({ min: 10, max: 100 }),
+      fc.float({ min: 0.01, max: 20 }),
+      (askPrice, spreadAmount) => {
+        const bidPrice = askPrice - spreadAmount;
+        const spread = calculateSpread(bidPrice, askPrice);
+        expect(spread).toBeCloseTo(spreadAmount, 2);
+      }
+    )
+  );
+});
+
+// Property: Order book sorting is maintained
+test('bids sorted descending, asks ascending', () => {
+  fc.assert(
+    fc.property(
+      fc.array(fc.record({
+        price: fc.float({ min: 10, max: 100 }),
+        quantity: fc.integer({ min: 1, max: 500 })
+      })),
+      (orders) => {
+        const bids = orders.map(o => ({...o, type: 'bid'}));
+        const asks = orders.map(o => ({...o, type: 'ask'}));
+        
+        const book = createOrderBook(bids, asks);
+        
+        // Check bids descending
+        for (let i = 1; i < book.bids.length; i++) {
+          expect(book.bids[i-1].price).toBeGreaterThanOrEqual(book.bids[i].price);
+        }
+        
+        // Check asks ascending
+        for (let i = 1; i < book.asks.length; i++) {
+          expect(book.asks[i-1].price).toBeLessThanOrEqual(book.asks[i].price);
+        }
+      }
+    )
   );
 });
 ```
 
-**Property Test Coverage:**
-- Each of the 27 correctness properties should have at least one property-based test
-- Properties 1-9: Translation module (9 tests)
-- Properties 10-16: Price discovery module (7 tests)
-- Properties 17-20: Negotiation assistant (4 tests)
-- Properties 21-25: Theme and UI (5 tests)
-- Properties 26-27: Data integrity (2 tests)
+### Integration Tests for User Flows
 
-### Unit Testing
+```typescript
+test('Complete trade flow: post ask → receive bid → negotiate → deal', async () => {
+  // 1. Seller posts ask
+  const ask = postOrder({
+    type: 'ask',
+    commodityId: 'tomato',
+    price: 40,
+    quantity: 50
+  });
+  
+  expect(ask.status).toBe('active');
+  
+  // 2. Buyer posts bid
+  const bid = postOrder({
+    type: 'bid',
+    commodityId: 'tomato',
+    price: 38,
+    quantity: 50
+  });
+  
+  // 3. System finds near match
+  const nearMatches = findNearMatches(ask.id, 0.10);
+  expect(nearMatches).toContain(bid);
+  
+  // 4. Notification sent
+  await waitFor(() => {
+    expect(getNotifications(ask.traderId)).toContainEqual(
+      expect.objectContaining({
+        type: 'near_match',
+        message: expect.stringContaining('₹38')
+      })
+    );
+  });
+  
+  // 5. Start negotiation
+  const negotiation = createNegotiation(bid.id, ask.id);
+  expect(negotiation.status).toBe('active');
+  
+  // 6. Counter offer
+  counterOffer(negotiation.id, ask.traderId, 39);
+  expect(negotiation.currentSellerOffer).toBe(39);
+  
+  // 7. Accept
+  const trade = acceptOffer(negotiation.id, bid.traderId);
+  
+  expect(trade.price).toBe(39);
+  expect(trade.quantity).toBe(50);
+  expect(ask.status).toBe('matched');
+  expect(bid.status).toBe('matched');
+});
+```
 
-**Unit Test Focus:**
-- Specific examples demonstrating correct behavior
-- Edge cases (empty strings, boundary values, special characters)
-- Error conditions and error messages
-- Integration between components
-- UI interactions and state changes
+### Performance Tests
 
-**Example Unit Tests:**
-
-```javascript
-// Specific example: Republic Day header content
-test('displays Republic Day header with flag', () => {
-  render(<Header />);
-  expect(screen.getByText(/India's 77th Republic Day Special/i)).toBeInTheDocument();
-  expect(screen.getByText(/🇮🇳/)).toBeInTheDocument();
+```typescript
+test('Exchange board renders 20 commodities in <500ms', () => {
+  const start = performance.now();
+  
+  render(<ExchangeBoard commodities={COMMODITIES} />);
+  
+  const end = performance.now();
+  expect(end - start).toBeLessThan(500);
 });
 
-// Edge case: empty translation input
-test('rejects empty translation input', () => {
-  render(<TranslationTab />);
-  const input = screen.getByRole('textbox');
-  const button = screen.getByRole('button', { name: /translate/i });
+test('Order book handles 100+ orders without lag', () => {
+  const orders = generateOrders(100);
   
-  fireEvent.change(input, { target: { value: '   ' } });
-  fireEvent.click(button);
+  const start = performance.now();
+  render(<OrderBookView orders={orders} />);
+  const end = performance.now();
   
-  expect(screen.getByText(/please enter text/i)).toBeInTheDocument();
+  expect(end - start).toBeLessThan(1000);
 });
 
-// Error condition: negative quantity
-test('shows error for negative quantity', () => {
-  render(<PriceCalculator />);
-  const quantityInput = screen.getByLabelText(/quantity/i);
+test('Market simulation runs smoothly', () => {
+  const frameDelays: number[] = [];
+  let lastTime = performance.now();
   
-  fireEvent.change(quantityInput, { target: { value: '-5' } });
+  const interval = setInterval(() => {
+    simulateMarketTick();
+    const now = performance.now();
+    frameDelays.push(now - lastTime);
+    lastTime = now;
+  }, 3000);
   
-  expect(screen.getByText(/valid positive quantity/i)).toBeInTheDocument();
+  setTimeout(() => {
+    clearInterval(interval);
+    const avgDelay = average(frameDelays);
+    expect(avgDelay).toBeLessThan(100); // <100ms overhead
+  }, 30000);
 });
 ```
 
-**Unit Test Coverage:**
-- Translation module: 15-20 unit tests
-- Price discovery module: 15-20 unit tests
-- Negotiation assistant: 10-15 unit tests
-- Theme and UI: 10-15 unit tests
-- Error handling: 10-15 unit tests
+## Deployment
 
-### Testing Balance
+### Build Configuration
 
-**Avoid Over-Testing:**
-- Don't write exhaustive unit tests for every possible input combination
-- Property-based tests handle comprehensive input coverage
-- Unit tests should focus on:
-  - Specific examples that clarify requirements
-  - Edge cases that property tests might miss
-  - Error conditions and user-facing messages
-  - Integration points between modules
-
-**Complementary Approach:**
-- Unit tests catch concrete bugs in specific scenarios
-- Property tests verify general correctness across all inputs
-- Together they provide comprehensive coverage without redundancy
-
-### Test Execution
-
-**Development Workflow:**
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode during development
-npm test -- --watch
-
-# Run only property-based tests
-npm test -- --testNamePattern="Property"
-
-# Run only unit tests
-npm test -- --testNamePattern="Unit"
-
-# Run tests with coverage
-npm test -- --coverage
-```
-
-**CI/CD Integration:**
-- All tests must pass before deployment
-- Property tests run with 100 iterations in CI
-- Coverage target: 80% for core business logic
-- UI components: 60% coverage (focus on interactions, not styling)
-
-### Mock Data for Testing
-
-**Translation Mocks:**
 ```javascript
-const mockTranslations = {
-  'hello': { hi: 'नमस्ते', te: 'హలో', ta: 'வணக்கம்', bn: 'হ্যালো' },
-  'thank you': { hi: 'धन्यवाद', te: 'ధన్యవాదాలు', ta: 'நன்றி', bn: 'ধন্যবাদ' }
-};
-```
-
-**Price Data Mocks:**
-```javascript
-const mockCommodity = {
-  id: 'rice',
-  name: 'Rice',
-  unit: 'kg',
-  basePrice: 50
-};
-
-const mockPriceData = {
-  commodity: mockCommodity,
-  minPrice: 45,
-  avgPrice: 50,
-  maxPrice: 55,
-  trend: 'up',
-  lastUpdated: Date.now()
-};
-```
-
-**Claude API Mocks:**
-```javascript
-const mockStrategies = [
-  {
-    id: '1',
-    title: 'Quality Emphasis',
-    description: 'Highlight product quality',
-    actionPoints: ['Show freshness', 'Mention grade', 'Compare with market']
+// vite.config.js
+export default {
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'exchange': ['./src/components/ExchangeBoard'],
+          'orderbook': ['./src/components/OrderBookView'],
+          'negotiation': ['./src/components/NegotiationRoom'],
+          'vendor': ['react', 'react-dom']
+        }
+      }
+    }
   },
-  {
-    id: '2',
-    title: 'Volume Discount',
-    description: 'Offer bulk pricing',
-    actionPoints: ['Calculate bulk rate', 'Show savings', 'Suggest larger order']
-  },
-  {
-    id: '3',
-    title: 'Market Rate Justification',
-    description: 'Reference current market prices',
-    actionPoints: ['Cite market rates', 'Explain price factors', 'Show value proposition']
+  optimizeDeps: {
+    include: ['react', 'react-dom']
   }
-];
+};
 ```
 
-### Performance Testing
+### Vercel Deployment
 
-**Load Time Targets:**
-- Initial page load: < 2 seconds
-- Tab switching: < 100ms
-- Translation: < 500ms
-- Price calculation: < 50ms
-- Claude API call: < 5 seconds (with 10s timeout)
+```json
+// vercel.json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}
+```
 
-**Performance Monitoring:**
-- Use React DevTools Profiler to identify slow renders
-- Monitor localStorage operations (should be < 10ms)
-- Track API call durations
-- Measure bundle size (target: < 500KB gzipped)
+## Future Enhancements
 
-### Accessibility Testing
+### Phase 2 Features
 
-**WCAG 2.1 Level AA Compliance:**
-- All interactive elements keyboard accessible
-- Color contrast ratios meet AA standards
-- Screen reader compatible
-- Focus indicators visible
-- ARIA labels on all form inputs
+1. **Real Backend Integration**
+   - Replace mock data with actual API
+   - WebSocket for true real-time updates
+   - User authentication & profiles
 
-**Testing Tools:**
-- axe-core for automated accessibility testing
-- Manual keyboard navigation testing
-- Screen reader testing (NVDA/JAWS)
+2. **Advanced Order Types**
+   - Limit orders (execute at specific price)
+   - Stop-loss orders
+   - Fill-or-kill orders
+   - Good-till-cancelled orders
 
-### Browser Compatibility Testing
+3. **Market Analytics**
+   - Historical price charts (candlesticks)
+   - Volume analysis
+   - Technical indicators (MA, RSI, MACD)
+   - Predictive analytics using ML
 
-**Target Browsers:**
-- Chrome 90+ (primary)
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-- Mobile: iOS Safari 14+, Chrome Android 90+
+4. **Social Features**
+   - Trader profiles & reputation
+   - Follow successful traders
+   - Community chat rooms
+   - Deal reviews & ratings
 
-**Compatibility Tests:**
-- Clipboard API fallback for older browsers
-- LocalStorage availability check
-- CSS Grid and Flexbox support
-- ES6 features (with Babel transpilation)
+5. **Mobile Native Apps**
+   - React Native version
+   - Push notifications
+   - Offline mode
+   - QR code trading
+
+This enhanced design creates a truly dynamic, engaging trading experience that goes far beyond static price discovery, making MandiMind a pioneering platform for India's agricultural markets. 🇮🇳
