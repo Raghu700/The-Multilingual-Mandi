@@ -1,6 +1,7 @@
 import { Header, Footer, TabNavigation } from './components';
 import { LanguageProvider } from './contexts/LanguageContext';
 
+
 function App() {
   return (
     <LanguageProvider>
