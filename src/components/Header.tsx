@@ -5,7 +5,6 @@
 
 import { Globe, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { t } from '../data/translations';
 import { Language } from '../types';
 
 const LANGUAGES: { code: Language; nativeName: string }[] = [
@@ -18,6 +17,26 @@ const LANGUAGES: { code: Language; nativeName: string }[] = [
 
 export function Header() {
   const { appLanguage, setAppLanguage } = useLanguage();
+
+  // Get current date dynamically
+  const getCurrentDate = () => {
+    const now = new Date();
+    const day = now.getDate();
+    const month = now.toLocaleString(appLanguage === 'en' ? 'en-US' : 'default', { month: 'long' });
+    const year = now.getFullYear();
+    
+    // Format based on language
+    if (appLanguage === 'hi') {
+      return `${day} ${month} ${year}`;
+    } else if (appLanguage === 'te') {
+      return `${day} ${month} ${year}`;
+    } else if (appLanguage === 'ta') {
+      return `${day} ${month} ${year}`;
+    } else if (appLanguage === 'bn') {
+      return `${day} ${month} ${year}`;
+    }
+    return `${day} ${month} ${year}`;
+  };
 
   return (
     <header className="bg-white/95 backdrop-blur-xl border-b border-slate-100 sticky top-0 z-50">
@@ -77,7 +96,7 @@ export function Header() {
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-orange-50/50 border border-orange-100 rounded-full">
               <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
               <span className="text-xs font-semibold text-orange-700">
-                {t('header.date', appLanguage)}
+                {getCurrentDate()}
               </span>
             </div>
 
