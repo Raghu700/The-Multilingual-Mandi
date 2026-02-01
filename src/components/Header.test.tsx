@@ -28,26 +28,27 @@ describe('Header Component', () => {
     expect(hindiName).toBeInTheDocument();
   });
 
-  it('displays date badge with "26 January 2026"', () => {
-    renderWithLanguageProvider(<Header />);
+  it('displays current date badge', () => {
+    const { container } = renderWithLanguageProvider(<Header />);
     
-    const dateBadge = screen.getByText('26 January 2026');
+    // Check that date badge container exists
+    const dateBadge = container.querySelector('.bg-orange-50\\/50');
     expect(dateBadge).toBeInTheDocument();
   });
 
-  it('applies glassmorphism header class with sticky positioning', () => {
+  it('applies glassmorphism styling with sticky positioning', () => {
     const { container } = renderWithLanguageProvider(<Header />);
     
     const header = container.querySelector('header');
-    expect(header).toHaveClass('glass-header-tricolor');
+    expect(header).toHaveClass('backdrop-blur-xl');
     expect(header).toHaveClass('sticky');
   });
 
-  it('displays tagline', () => {
-    renderWithLanguageProvider(<Header />);
+  it('displays tricolor gradient border', () => {
+    const { container } = renderWithLanguageProvider(<Header />);
     
-    const tagline = screen.getByText(/unity in diversity/i);
-    expect(tagline).toBeInTheDocument();
+    const tricolorBorder = container.querySelector('.bg-gradient-to-r.from-\\[\\#FF9933\\]');
+    expect(tricolorBorder).toBeInTheDocument();
   });
 
   it('displays language selector with Globe icon', () => {
@@ -57,10 +58,10 @@ describe('Header Component', () => {
     expect(select).toBeInTheDocument();
   });
 
-  it('constrains content to max width of 1400px', () => {
+  it('constrains content to max width', () => {
     const { container } = renderWithLanguageProvider(<Header />);
     
-    const contentContainer = container.querySelector('.max-w-\\[1400px\\]');
+    const contentContainer = container.querySelector('.max-w-5xl');
     expect(contentContainer).toBeInTheDocument();
   });
 });

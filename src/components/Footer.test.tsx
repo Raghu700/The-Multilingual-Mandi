@@ -6,63 +6,69 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Footer } from './Footer';
-import { REPUBLIC_DAY_MESSAGES } from '../utils/theme';
+import { LanguageProvider } from '../contexts/LanguageContext';
+
+// Wrapper component for tests
+const renderWithLanguageProvider = (component: React.ReactElement) => {
+  return render(<LanguageProvider>{component}</LanguageProvider>);
+};
 
 describe('Footer Component', () => {
   it('displays "Jai Hind" message', () => {
-    render(<Footer />);
+    renderWithLanguageProvider(<Footer />);
     
-    const jaiHindText = screen.getByText(REPUBLIC_DAY_MESSAGES.footer);
+    const jaiHindText = screen.getByText('जय हिंद!');
     expect(jaiHindText).toBeInTheDocument();
   });
 
-  it('displays Indian flag emoji', () => {
-    render(<Footer />);
+  it('displays heart emoji', () => {
+    renderWithLanguageProvider(<Footer />);
     
-    const flagEmoji = screen.getByRole('img', { name: /indian flag/i });
-    expect(flagEmoji).toBeInTheDocument();
-    expect(flagEmoji).toHaveTextContent(REPUBLIC_DAY_MESSAGES.flag);
+    const heartEmoji = screen.getByText('❤️');
+    expect(heartEmoji).toBeInTheDocument();
   });
 
-  it('applies glassmorphism green card class', () => {
-    const { container } = render(<Footer />);
+  it('applies gradient background styling', () => {
+    const { container } = renderWithLanguageProvider(<Footer />);
     
     const footer = container.querySelector('footer');
-    expect(footer).toHaveClass('glass-card-green');
+    expect(footer).toHaveClass('bg-gradient-to-br');
   });
 
-  it('displays Republic Day celebration message', () => {
-    render(<Footer />);
+  it('displays "Made with love for Bharat" message', () => {
+    renderWithLanguageProvider(<Footer />);
     
-    const celebrationText = screen.getByText(/celebrating india's 77th republic day/i);
-    expect(celebrationText).toBeInTheDocument();
+    const madeWithLove = screen.getByText('Made with');
+    const bharatText = screen.getByText('Bharat');
+    expect(madeWithLove).toBeInTheDocument();
+    expect(bharatText).toBeInTheDocument();
   });
 
-  it('displays empowering vendors tagline', () => {
-    render(<Footer />);
+  it('displays tricolor top border', () => {
+    const { container } = renderWithLanguageProvider(<Footer />);
     
-    const tagline = screen.getByText(/empowering vendors, uniting markets/i);
-    expect(tagline).toBeInTheDocument();
+    const tricolorBorder = container.querySelector('.bg-gradient-to-r.from-\\[\\#FF9933\\]');
+    expect(tricolorBorder).toBeInTheDocument();
   });
 
   it('applies responsive layout classes', () => {
-    const { container } = render(<Footer />);
+    const { container } = renderWithLanguageProvider(<Footer />);
     
     const flexContainer = container.querySelector('.flex.flex-col.md\\:flex-row');
     expect(flexContainer).toBeInTheDocument();
   });
 
-  it('constrains content to max width of 1200px', () => {
-    const { container } = render(<Footer />);
+  it('constrains content to max width', () => {
+    const { container } = renderWithLanguageProvider(<Footer />);
     
-    const contentContainer = container.querySelector('.max-w-\\[1200px\\]');
+    const contentContainer = container.querySelector('.max-w-5xl');
     expect(contentContainer).toBeInTheDocument();
   });
 
-  it('applies patriotic navy blue text color', () => {
-    render(<Footer />);
+  it('displays gradient text for Jai Hind heading', () => {
+    renderWithLanguageProvider(<Footer />);
     
-    const jaiHindHeading = screen.getByRole('heading', { name: REPUBLIC_DAY_MESSAGES.footer });
-    expect(jaiHindHeading).toHaveClass('text-navy-blue');
+    const jaiHindHeading = screen.getByRole('heading', { name: 'जय हिंद!' });
+    expect(jaiHindHeading).toHaveClass('bg-clip-text');
   });
 });

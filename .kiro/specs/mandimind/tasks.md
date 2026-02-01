@@ -31,7 +31,7 @@ This implementation plan breaks down the MandiMind Republic Day hackathon projec
     - Apply patriotic styling
     - _Requirements: 4.5_
   
-  - [~] 2.4 Write unit tests for theme components
+  - [ ] 2.4 Write unit tests for theme components
     - Test header displays correct text and flag
     - Test footer displays "Jai Hind"
     - Test date badge shows "26 January 2026"
@@ -50,11 +50,11 @@ This implementation plan breaks down the MandiMind Republic Day hackathon projec
     - Apply max-width constraint (1200px)
     - _Requirements: 5.1, 5.2_
   
-  - [~] 3.3 Write property test for responsive layout
+  - [ ] 3.3 Write property test for responsive layout
     - **Property 22: Responsive layout constraint**
     - **Validates: Requirements 5.2**
   
-  - [~] 3.4 Write property test for mobile responsiveness
+  - [ ] 3.4 Write property test for mobile responsiveness
     - **Property 23: Mobile-first responsiveness**
     - **Validates: Requirements 5.1**
 
