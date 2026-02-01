@@ -15,6 +15,7 @@ export function PriceDiscoveryTab() {
 
   const [selectedCommodity, setSelectedCommodity] = useState<Commodity>(COMMODITIES[0]);
   const [priceData, setPriceData] = useState<PriceData | null>(null);
+  const [calculatorQuantity, setCalculatorQuantity] = useState<number>(100);
 
   useEffect(() => {
     if (selectedCommodity) {
@@ -151,14 +152,16 @@ export function PriceDiscoveryTab() {
             <div className="flex items-center gap-3 flex-wrap">
               <input
                 type="number"
-                defaultValue={100}
+                value={calculatorQuantity}
+                onChange={(e) => setCalculatorQuantity(Number(e.target.value) || 0)}
+                min="0"
                 className="w-24 px-3 py-2 rounded-lg border border-slate-200 focus:border-orange-300 focus:ring-2 focus:ring-orange-100 outline-none text-center"
               />
               <span className="text-slate-500">{selectedCommodity.unit}</span>
               <span className="text-slate-400">×</span>
               <span className="font-semibold text-orange-600">{formatCurrency(priceData.avgPrice)}</span>
               <span className="text-slate-400">=</span>
-              <span className="text-xl font-bold text-slate-800">{formatCurrency(priceData.avgPrice * 100)}</span>
+              <span className="text-xl font-bold text-slate-800">{formatCurrency(priceData.avgPrice * calculatorQuantity)}</span>
             </div>
           </div>
         </>
