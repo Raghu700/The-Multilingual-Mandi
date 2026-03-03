@@ -3,16 +3,33 @@
  * Three tabs: Price Discovery, Smart Match (NEW), and Negotiation
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TrendingUp, Sparkles, Users } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PriceDiscoveryTab } from './PriceDiscoveryTab';
 import { SmartMatchTab } from './SmartMatchTab';
 import { NegotiationTab } from './NegotiationTab';
 
-export function TabNavigation() {
-  const [activeTab, setActiveTab] = useState('smart-match'); // Default to new feature
+interface TabNavigationProps {
+  externalActiveTab?: string;
+  onTabChange?: (tab: string) => void;
+}
+
+export function TabNavigation({ externalActiveTab, onTabChange }: TabNavigationProps = {}) {
+  const [internalTab, setInternalTab] = useState('smart-match'); // Default to new feature
+  const activeTab = externalActiveTab ?? internalTab;
+  const setActiveTab = (tab: string) => {
+    setInternalTab(tab);
+    onTabChange?.(tab);
+  };
   const { appLanguage } = useLanguage();
+
+  // Sync external tab from voice assistant
+  useEffect(() => {
+    if (externalActiveTab) {
+      setInternalTab(externalActiveTab);
+    }
+  }, [externalActiveTab]);
 
   const tabLabels: Record<string, Record<string, string>> = {
     'price-discovery': {

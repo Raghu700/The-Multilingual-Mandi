@@ -38,3 +38,6 @@ export { QuickTips } from './QuickTips';
 
 // Smart Matching Module
 export { SmartMatchTab } from './SmartMatchTab';
+
+// Voice Assistant Module
+export { VoiceAssistant } from './VoiceAssistant';

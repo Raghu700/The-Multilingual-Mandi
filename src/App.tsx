@@ -3,8 +3,9 @@
  * Clean layout with proper scrolling and auth protection
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Header, Footer, TabNavigation } from './components';
+import { VoiceAssistant } from './components/VoiceAssistant';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -13,6 +14,11 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
+  const [voiceTab, setVoiceTab] = useState<string | undefined>(undefined);
+
+  const handleVoiceNavigate = useCallback((tab: string) => {
+    setVoiceTab(tab);
+  }, []);
 
   // Loading state
   if (isLoading) {
@@ -43,11 +49,14 @@ function AppContent() {
 
       {/* Main Content - Scrollable */}
       <main className="flex-1 overflow-y-auto">
-        <TabNavigation />
+        <TabNavigation externalActiveTab={voiceTab} onTabChange={() => setVoiceTab(undefined)} />
       </main>
 
       {/* Footer - Fixed at bottom */}
       <Footer />
+
+      {/* Voice Assistant - Floating */}
+      <VoiceAssistant onNavigate={handleVoiceNavigate} />
     </div>
   );
 }
