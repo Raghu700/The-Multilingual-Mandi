@@ -1,6 +1,6 @@
 /**
  * Component Exports
- * Central export file for all MandiMind components
+ * Central export file for all EktaMandi components
  */
 
 export { Header } from './Header';

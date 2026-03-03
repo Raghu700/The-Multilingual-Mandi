@@ -2,8 +2,8 @@ import { TranslationEntry, TranslationHistoryStorage, UserPreferences } from '..
 
 // LocalStorage keys
 const STORAGE_KEYS = {
-  TRANSLATION_HISTORY: 'mandimind_translation_history',
-  USER_PREFERENCES: 'mandimind_preferences',
+  TRANSLATION_HISTORY: 'ektamandi_translation_history',
+  USER_PREFERENCES: 'ektamandi_preferences',
 } as const;
 
 // Maximum number of translation entries to store

@@ -1,4 +1,4 @@
-// Base types for MandiMind application
+// Base types for EktaMandi application
 
 // Language types
 export type Language = 'en' | 'hi' | 'te' | 'ta' | 'bn';

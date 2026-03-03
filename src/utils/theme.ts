@@ -1,5 +1,5 @@
 /**
- * Theme Configuration for MandiMind
+ * Theme Configuration for EktaMandi
  * India's 77th Republic Day Special - 26 January 2026
  * 
  * This file contains all theme-related constants, colors, and utilities
