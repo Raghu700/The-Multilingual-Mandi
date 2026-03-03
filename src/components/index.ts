@@ -7,6 +7,10 @@ export { Header } from './Header';
 export { Footer } from './Footer';
 export { TabNavigation } from './TabNavigation';
 
+// Authentication Module
+export { Login } from './Login';
+export { Register } from './Register';
+
 // Translation Module
 export { TranslationTab } from './TranslationTab';
 export { LanguageSelector } from './LanguageSelector';
