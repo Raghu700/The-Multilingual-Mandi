@@ -57,6 +57,7 @@ body {
   overflow-x: hidden;
 }
 
+
 /* Hide scrollbar but keep functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;

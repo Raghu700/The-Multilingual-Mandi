@@ -45,7 +45,7 @@ export function PriceDiscoveryTab() {
   } : null;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="w-full max-w-3xl mx-auto space-y-6 px-2 sm:px-0">
       {/* Commodity Selector - Horizontal */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {COMMODITIES.slice(0, 8).map((commodity) => (
@@ -66,8 +66,8 @@ export function PriceDiscoveryTab() {
       {priceData && (
         <>
           {/* Main Price Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-white rounded-2xl p-3 sm:p-6 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-4 sm:mb-6 gap-2">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-3xl">
                   {selectedCommodity.emoji}
@@ -91,26 +91,26 @@ export function PriceDiscoveryTab() {
             </div>
 
             {/* Price Grid */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="text-center p-4 rounded-xl bg-slate-50">
-                <p className="text-xs text-slate-500 mb-1">{t('price.min', appLanguage)}</p>
-                <p className="text-2xl font-bold text-slate-700">{formatCurrency(priceData.minPrice)}</p>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="text-center p-2 sm:p-4 rounded-xl bg-slate-50">
+                <p className="text-[10px] sm:text-xs text-slate-500 mb-1">{t('price.min', appLanguage)}</p>
+                <p className="text-lg sm:text-2xl font-bold text-slate-700">{formatCurrency(priceData.minPrice)}</p>
               </div>
-              <div className="text-center p-4 rounded-xl bg-orange-50 border-2 border-orange-200">
-                <p className="text-xs text-orange-600 mb-1">{t('price.avg', appLanguage)}</p>
-                <p className="text-2xl font-bold text-orange-600">{formatCurrency(priceData.avgPrice)}</p>
+              <div className="text-center p-2 sm:p-4 rounded-xl bg-orange-50 border-2 border-orange-200">
+                <p className="text-[10px] sm:text-xs text-orange-600 mb-1">{t('price.avg', appLanguage)}</p>
+                <p className="text-lg sm:text-2xl font-bold text-orange-600">{formatCurrency(priceData.avgPrice)}</p>
               </div>
-              <div className="text-center p-4 rounded-xl bg-slate-50">
-                <p className="text-xs text-slate-500 mb-1">{t('price.max', appLanguage)}</p>
-                <p className="text-2xl font-bold text-slate-700">{formatCurrency(priceData.maxPrice)}</p>
+              <div className="text-center p-2 sm:p-4 rounded-xl bg-slate-50">
+                <p className="text-[10px] sm:text-xs text-slate-500 mb-1">{t('price.max', appLanguage)}</p>
+                <p className="text-lg sm:text-2xl font-bold text-slate-700">{formatCurrency(priceData.maxPrice)}</p>
               </div>
             </div>
           </div>
 
           {/* AI Prediction - Compact */}
           {prediction && (
-            <div className="bg-violet-50 rounded-2xl p-5 border border-violet-100">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-violet-50 rounded-2xl p-3 sm:p-5 border border-violet-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-1 sm:gap-0">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-violet-500" />
                   <span className="font-semibold text-slate-800">{t('ai.prediction', appLanguage)}</span>
@@ -122,20 +122,20 @@ export function PriceDiscoveryTab() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 text-center">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
                 <div>
-                  <p className="text-xs text-slate-500 mb-1">{t('ai.currentPrice', appLanguage)}</p>
-                  <p className="text-xl font-bold text-slate-700">{formatCurrency(prediction.current)}</p>
+                  <p className="text-[10px] sm:text-xs text-slate-500 mb-1">{t('ai.currentPrice', appLanguage)}</p>
+                  <p className="text-base sm:text-xl font-bold text-slate-700">{formatCurrency(prediction.current)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 mb-1">{t('ai.predictedPrice', appLanguage)}</p>
-                  <p className={`text-xl font-bold ${prediction.predicted > prediction.current ? 'text-emerald-600' :
+                  <p className="text-[10px] sm:text-xs text-slate-500 mb-1">{t('ai.predictedPrice', appLanguage)}</p>
+                  <p className={`text-base sm:text-xl font-bold ${prediction.predicted > prediction.current ? 'text-emerald-600' :
                       prediction.predicted < prediction.current ? 'text-rose-600' : 'text-slate-700'
                     }`}>{formatCurrency(prediction.predicted)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 mb-1">{t('ai.expectedChange', appLanguage)}</p>
-                  <p className={`text-xl font-bold ${prediction.predicted > prediction.current ? 'text-emerald-600' :
+                  <p className="text-[10px] sm:text-xs text-slate-500 mb-1">{t('ai.expectedChange', appLanguage)}</p>
+                  <p className={`text-base sm:text-xl font-bold ${prediction.predicted > prediction.current ? 'text-emerald-600' :
                       prediction.predicted < prediction.current ? 'text-rose-600' : 'text-slate-700'
                     }`}>
                     {prediction.predicted >= prediction.current ? '+' : ''}

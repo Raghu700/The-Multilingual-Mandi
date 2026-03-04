@@ -45,12 +45,12 @@ export function Header() {
       {/* Tricolor top border - subtle */}
       <div className="h-1 bg-gradient-to-r from-[#FF9933] via-white to-[#138808] opacity-80"></div>
 
-      <div className="max-w-5xl mx-auto px-4 py-4">
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Brand Identity */}
-          <div className="flex items-center gap-3 group cursor-pointer">
+          <div className="flex items-center gap-1.5 sm:gap-3 group cursor-pointer">
             {/* Ashoka Chakra SVG - Navy Blue */}
-            <div className="relative w-10 h-10 flex items-center justify-center transition-transform duration-700 ease-in-out group-hover:rotate-180">
+            <div className="relative w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center transition-transform duration-700 ease-in-out group-hover:rotate-180">
               <svg viewBox="0 0 24 24" className="w-full h-full text-[#A63A2E]" fill="currentColor">
                 {/* Outer Circle */}
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
@@ -83,44 +83,41 @@ export function Header() {
             </div>
 
             <div className="flex flex-col">
-              <h1 className="text-xl font-extrabold text-[#1e2c56] tracking-tight leading-none">
+              <h1 className="text-sm sm:text-xl font-extrabold text-[#1e2c56] tracking-tight leading-none">
                 EktaMandi
               </h1>
-              <span className="text-xs font-bold text-orange-600 tracking-wide">
+              <span className="text-[9px] sm:text-xs font-bold text-orange-600 tracking-wide hidden sm:block">
                 (एकता मंडी)
               </span>
             </div>
           </div>
 
           {/* Right: User Info, Date & Language */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
             {/* User Info */}
             {user && (
-              <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-xl">
-                <User className="w-4 h-4 text-emerald-600" />
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-emerald-800">{user.name}</span>
-                  <span className="text-[10px] text-emerald-600 capitalize">{user.role}</span>
-                </div>
+              <div className="flex items-center gap-1 px-1.5 sm:px-3 py-1 sm:py-2 bg-emerald-50 border border-emerald-100 rounded-lg sm:rounded-xl">
+                <User className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600" />
+                <span className="text-[10px] sm:text-xs font-semibold text-emerald-800 hidden sm:inline">{user.name}</span>
               </div>
             )}
 
             {/* Date Badge */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-orange-50/50 border border-orange-100 rounded-full">
-              <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
-              <span className="text-xs font-semibold text-orange-700">
+            <div className="flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-0.5 sm:py-1.5 bg-orange-50/50 border border-orange-100 rounded-full">
+              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
+              <span className="text-[9px] sm:text-xs font-semibold text-orange-700 whitespace-nowrap">
                 {getCurrentDate()}
               </span>
             </div>
 
             {/* Language Selector */}
             <div className="relative">
-              <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-all cursor-pointer group">
-                <Globe className="w-4 h-4 text-slate-500 group-hover:text-slate-700" />
+              <div className="flex items-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1 sm:py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg sm:rounded-xl transition-all cursor-pointer group">
+                <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500 group-hover:text-slate-700" />
                 <select
                   value={appLanguage}
                   onChange={(e) => setAppLanguage(e.target.value as Language)}
-                  className="bg-transparent text-slate-700 font-medium text-sm cursor-pointer outline-none appearance-none pr-6"
+                  className="bg-transparent text-slate-700 font-medium text-[10px] sm:text-sm cursor-pointer outline-none appearance-none pr-3 sm:pr-6 max-w-[55px] sm:max-w-none"
                 >
                   {LANGUAGES.map((lang) => (
                     <option key={lang.code} value={lang.code}>
@@ -135,7 +132,7 @@ export function Header() {
             {/* Logout Button */}
             <button
               onClick={logout}
-              className="flex items-center gap-2 px-3 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all text-rose-700 hover:text-rose-800"
+              className="flex items-center px-1.5 sm:px-3 py-1 sm:py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg sm:rounded-xl transition-all text-rose-700 hover:text-rose-800"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />

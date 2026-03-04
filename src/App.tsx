@@ -43,12 +43,12 @@ function AppContent() {
 
   // Show main app if authenticated
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50/30 via-white to-emerald-50/30">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50/30 via-white to-emerald-50/30 w-full max-w-full overflow-x-hidden">
       {/* Header - Fixed */}
       <Header />
 
       {/* Main Content - Scrollable */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden">
         <TabNavigation externalActiveTab={voiceTab} onTabChange={() => setVoiceTab(undefined)} />
       </main>
 

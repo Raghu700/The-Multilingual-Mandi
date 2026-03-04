@@ -62,10 +62,10 @@ export function TabNavigation({ externalActiveTab, onTabChange }: TabNavigationP
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-6">
+    <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
       {/* Tab Buttons */}
-      <div className="flex justify-center mb-6">
-        <div className="inline-flex bg-slate-100 rounded-2xl p-1.5 gap-1">
+      <div className="flex justify-center mb-4 sm:mb-6">
+        <div className="inline-flex bg-slate-100 rounded-2xl p-1 sm:p-1.5 gap-0.5 sm:gap-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -75,7 +75,7 @@ export function TabNavigation({ externalActiveTab, onTabChange }: TabNavigationP
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm transition-all ${isActive
+                className={`relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-2 sm:py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all ${isActive
                     ? isSmartMatch
                       ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-200'
                       : 'bg-orange-500 text-white shadow-md'

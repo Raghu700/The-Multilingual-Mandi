@@ -214,32 +214,32 @@ export function SmartMatchTab() {
     // Step 1: Buy or Sell
     if (step === 'type') {
         return (
-            <div className="max-w-md mx-auto">
-                <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 text-center">
+            <div className="w-full max-w-md mx-auto px-2 sm:px-0">
+                <div className="bg-white rounded-3xl p-4 sm:p-8 shadow-sm border border-slate-100 text-center">
                     <div className="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                         <Sparkles className="w-8 h-8 text-violet-600" />
                     </div>
                     <h2 className="text-xl font-bold text-slate-800 mb-8">{t('whatDoYouWant')}</h2>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
                         <button
                             onClick={() => { setRequirement({ type: 'buy' }); setStep('commodity'); }}
-                            className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-100 hover:border-emerald-300 transition-all group"
+                            className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-100 hover:border-emerald-300 transition-all group"
                         >
-                            <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <ShoppingBag className="w-8 h-8 text-white" />
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-emerald-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                             </div>
-                            <span className="text-lg font-bold text-emerald-700">{t('buyGoods')}</span>
+                            <span className="text-base sm:text-lg font-bold text-emerald-700">{t('buyGoods')}</span>
                         </button>
 
                         <button
                             onClick={() => { setRequirement({ type: 'sell' }); setStep('commodity'); }}
-                            className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-orange-50 hover:bg-orange-100 border-2 border-orange-100 hover:border-orange-300 transition-all group"
+                            className="flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-2xl bg-orange-50 hover:bg-orange-100 border-2 border-orange-100 hover:border-orange-300 transition-all group"
                         >
-                            <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Store className="w-8 h-8 text-white" />
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-orange-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Store className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                             </div>
-                            <span className="text-lg font-bold text-orange-700">{t('sellGoods')}</span>
+                            <span className="text-base sm:text-lg font-bold text-orange-700">{t('sellGoods')}</span>
                         </button>
                     </div>
                 </div>
@@ -250,8 +250,8 @@ export function SmartMatchTab() {
     // Step 2: Select Commodity
     if (step === 'commodity') {
         return (
-            <div className="max-w-lg mx-auto">
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <div className="w-full max-w-lg mx-auto px-2 sm:px-0">
+                <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-100">
                     <div className="flex items-center gap-3 mb-6">
                         <button
                             onClick={() => setStep('type')}
@@ -262,7 +262,7 @@ export function SmartMatchTab() {
                         <h2 className="text-lg font-bold text-slate-800 flex-1 text-center pr-10">{t('selectItem')}</h2>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                         {COMMODITIES.slice(0, 12).map(commodity => (
                             <button
                                 key={commodity.id}
@@ -270,7 +270,7 @@ export function SmartMatchTab() {
                                     setRequirement(prev => ({ ...prev, commodity }));
                                     setStep('details');
                                 }}
-                                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 border-transparent hover:border-orange-300 transition-all hover:scale-105"
+                                className="flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 border-transparent hover:border-orange-300 transition-all"
                             >
                                 <span className="text-4xl">{commodity.emoji}</span>
                                 <span className="text-xs font-medium text-slate-700 text-center leading-tight">
@@ -300,8 +300,8 @@ export function SmartMatchTab() {
         const isFormComplete = requirement.quantity && requirement.priceLimit && requirement.priceLimit > 0;
 
         return (
-            <div className="max-w-md mx-auto">
-                <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <div className="w-full max-w-md mx-auto px-2 sm:px-0">
+                <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-100">
                     {/* Back Button & Selected Item */}
                     <div className="flex items-center gap-3 mb-6">
                         <button
@@ -405,7 +405,7 @@ export function SmartMatchTab() {
         // Deal Done State
         if (dealDone && selectedMatch) {
             return (
-                <div className="max-w-md mx-auto">
+                <div className="w-full max-w-md mx-auto px-2 sm:px-0">
                     <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-3xl p-8 text-center border border-emerald-200">
                         <div className="text-6xl mb-4">🎉</div>
                         <h2 className="text-2xl font-bold text-slate-800 mb-2">{t('dealDone')}</h2>
@@ -445,7 +445,7 @@ export function SmartMatchTab() {
 
         // Show Matches
         return (
-            <div className="max-w-lg mx-auto">
+            <div className="w-full max-w-lg mx-auto px-2 sm:px-0">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">

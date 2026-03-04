@@ -270,7 +270,7 @@ export function NegotiationRoom() {
   // Role Selection
   if (state.status === 'selecting') {
     return (
-      <div className="max-w-lg mx-auto space-y-6">
+      <div className="w-full max-w-lg mx-auto space-y-6 px-2 sm:px-0">
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 text-center">
           <h2 className="text-lg font-semibold text-slate-800 mb-5">{t('selectRole')}</h2>
           <div className="flex justify-center gap-4">
@@ -300,7 +300,7 @@ export function NegotiationRoom() {
         {state.role && (
           <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 animate-fadeIn">
             <h3 className="text-sm font-medium text-slate-600 mb-4">{t('selectItem')}</h3>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {COMMODITIES.slice(0, 8).map(commodity => (
                 <button
                   key={commodity.id}
@@ -321,7 +321,7 @@ export function NegotiationRoom() {
   // Deal Complete
   if (state.status === 'completed') {
     return (
-      <div className="max-w-md mx-auto">
+      <div className="w-full max-w-md mx-auto px-2 sm:px-0">
         <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-8 text-center border border-orange-100">
           <div className="text-5xl mb-4">🎉</div>
           <h3 className="text-2xl font-bold text-slate-800 mb-3">{t('dealDone')}</h3>
@@ -341,15 +341,15 @@ export function NegotiationRoom() {
 
   // Active Negotiation
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
+    <div className="w-full max-w-2xl mx-auto space-y-4 px-2 sm:px-0">
       {/* Header Bar */}
-      <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">{state.commodity?.emoji}</span>
-          <span className="font-medium text-slate-800">{state.commodity?.names[appLanguage]}</span>
+      <div className="bg-white rounded-xl p-2.5 sm:p-3 shadow-sm border border-slate-100 flex items-center justify-between gap-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span className="text-xl sm:text-2xl">{state.commodity?.emoji}</span>
+          <span className="font-medium text-sm sm:text-base text-slate-800 truncate">{state.commodity?.names[appLanguage]}</span>
         </div>
 
-        <div className="flex items-center gap-3 text-sm">
+        <div className="flex items-center gap-1.5 sm:gap-3 text-xs sm:text-sm flex-shrink-0">
           <span className={`font-bold ${state.role === 'buyer' ? 'text-emerald-600' : 'text-orange-600'}`}>₹{state.userPrice}</span>
           <span className="text-slate-300">→</span>
           <span className={`font-bold ${state.role === 'buyer' ? 'text-orange-600' : 'text-emerald-600'}`}>₹{state.counterpartPrice}</span>

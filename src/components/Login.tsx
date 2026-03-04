@@ -41,7 +41,7 @@ export function Login({ onSwitchToRegister }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-emerald-50 px-4">
+    <div className="min-h-screen w-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-emerald-50 px-3 sm:px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -58,7 +58,7 @@ export function Login({ onSwitchToRegister }: LoginProps) {
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
+        <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-8 border border-slate-100">
           <h2 className="text-2xl font-bold text-slate-800 mb-2">Welcome Back</h2>
           <p className="text-slate-600 text-sm mb-6">Sign in to continue to your account</p>
 
