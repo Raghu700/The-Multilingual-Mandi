@@ -76,6 +76,8 @@ export function VoiceAssistant({ onNavigate }: VoiceAssistantProps) {
     greet,
     clearMessages,
     switchVoiceLanguage,
+    aiEnabled,
+    aiProvider,
   } = useVoiceAssistant({ language: appLanguage, onNavigate, onLanguageChange: handleLanguageChange });
 
   // Auto-scroll to bottom on new messages
@@ -162,8 +164,11 @@ export function VoiceAssistant({ onNavigate }: VoiceAssistantProps) {
                         : isSpeaking
                           ? '🔊'
                           : isProcessing
-                            ? '...'
+                            ? (aiEnabled ? '🤖 AI thinking...' : '...')
                             : LANG_FLAG_LABELS[voiceLang].native}
+                      {aiEnabled && !isListening && !isSpeaking && !isProcessing && (
+                        <span className="ml-1 text-[8px] bg-white/20 rounded px-1" title={aiProvider}>AI</span>
+                      )}
                     </span>
                   </div>
                 </div>

@@ -15,6 +15,7 @@ import { Language } from '../types';
 import { COMMODITIES, getCommodityName } from '../data/commodities';
 import { getPriceData } from '../services/priceService';
 import { getAllTips } from '../data/negotiationTips';
+import { getAIResponse, isAIAvailable, getAIProvider, ConversationMessage } from '../services/llmService';
 
 // BCP-47 language codes for Web Speech API
 const LANG_CODES: Record<Language, string> = {
@@ -77,6 +78,8 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [voiceLang, setVoiceLang] = useState<Language>(language);
   const [autoDetect, setAutoDetect] = useState(false);
+  const aiEnabled = isAIAvailable();
+  const aiProvider = getAIProvider();
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const messageIdRef = useRef(0);
@@ -88,6 +91,7 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
   const onNavigateRef = useRef(onNavigate);
   const onLanguageChangeRef = useRef(onLanguageChange);
   const voiceCacheRef = useRef<Map<string, SpeechSynthesisVoice>>(new Map());
+  const conversationHistoryRef = useRef<ConversationMessage[]>([]);
 
   // Keep refs in sync
   useEffect(() => { languageRef.current = language; }, [language]);
@@ -206,29 +210,55 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
     speak(reply);
   }, [addMessage, speak]);
 
-  // Process voice commands (uses refs to always read current language/navigate)
-  const processCommand = useCallback((transcript: string) => {
+  // Process voice commands — tries AI first, falls back to rule-based
+  const processCommand = useCallback(async (transcript: string) => {
     const lower = transcript.toLowerCase().trim();
     const lang = voiceLangRef.current;
     const navigate = onNavigateRef.current;
-    console.log('[VoiceAssistant] Processing command:', lower, '| lang:', lang);
+    console.log('[VoiceAssistant] Processing:', lower, '| lang:', lang, '| AI:', isAIAvailable());
     updateStatus('processing');
 
-    // --- Language switching via voice ---
+    // --- Always rule-based: Language switching ---
     const detectedLangSwitch = detectLanguageSwitchCommand(lower);
     if (detectedLangSwitch) {
       switchVoiceLanguage(detectedLangSwitch);
       return;
     }
 
-    // --- Auto-detect toggle ---
+    // --- Always rule-based: Auto-detect toggle ---
     if (matchesAny(lower, [
       'auto detect', 'auto-detect', 'detect language', 'any language',
-      'कोई भी भाषा', 'भाषा पहचानो', 'ఏ భాషైనా', 'எந்த மொழியும்', 'যেকোনো ভাষা',
+      '\u0915\u094b\u0908 \u092d\u0940 \u092d\u093e\u0937\u093e', '\u092d\u093e\u0937\u093e \u092a\u0939\u091a\u093e\u0928\u094b', '\u0c0f \u0c2d\u0c3e\u0c37\u0c48\u0c28\u0c3e', '\u0b8e\u0ba8\u0bcd\u0ba4 \u0bae\u0bca\u0bb4\u0bbf\u0baf\u0bc1\u0bae\u0bcd', '\u09af\u09c7\u0995\u09cb\u09a8\u09cb \u09ad\u09be\u09b7\u09be',
     ])) {
       toggleAutoDetect();
       return;
     }
+
+    // --- Try AI for natural conversation ---
+    if (isAIAvailable()) {
+      try {
+        console.log('[VoiceAssistant] Sending to AI...');
+        const aiResult = await getAIResponse(transcript, lang, conversationHistoryRef.current);
+        if (aiResult) {
+          conversationHistoryRef.current.push(
+            { role: 'user', content: transcript },
+            { role: 'assistant', content: aiResult.text }
+          );
+          if (conversationHistoryRef.current.length > 20) {
+            conversationHistoryRef.current = conversationHistoryRef.current.slice(-20);
+          }
+          if (aiResult.navAction && navigate) navigate(aiResult.navAction);
+          if (aiResult.langSwitch) switchVoiceLanguage(aiResult.langSwitch);
+          addMessage(aiResult.text, 'assistant');
+          speak(aiResult.text);
+          return;
+        }
+      } catch (err) {
+        console.warn('[VoiceAssistant] AI failed, using rule-based:', err);
+      }
+    }
+
+    // --- Fallback: Rule-based processing ---
 
     // --- Greetings & casual conversation ---
     if (matchesAny(lower, [
@@ -629,9 +659,10 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
     addMessage(greeting, 'assistant');
   }, [addMessage]);
 
-  // Clear messages
+  // Clear messages and conversation history
   const clearMessages = useCallback(() => {
     setMessages([]);
+    conversationHistoryRef.current = [];
   }, []);
 
   return {
@@ -648,6 +679,8 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
     speak,
     switchVoiceLanguage,
     toggleAutoDetect,
+    aiEnabled,
+    aiProvider,
   };
 }
 
