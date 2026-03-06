@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, X, Trash2, Volume2, MessageCircle } from 'lucide-react';
+import { Mic, MicOff, X, Trash2, Volume2, MessageCircle, Languages } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useVoiceAssistant, VoiceMessage } from '../hooks/useVoiceAssistant';
 import { Language } from '../types';
@@ -13,6 +13,14 @@ import { Language } from '../types';
 interface VoiceAssistantProps {
   onNavigate?: (tab: string) => void;
 }
+
+const LANG_FLAG_LABELS: Record<Language, { short: string; native: string }> = {
+  en: { short: 'EN', native: 'English' },
+  hi: { short: 'हि', native: 'हिन्दी' },
+  te: { short: 'తె', native: 'తెలుగు' },
+  ta: { short: 'த', native: 'தமிழ்' },
+  bn: { short: 'বা', native: 'বাংলা' },
+};
 
 const PANEL_TITLE: Record<Language, string> = {
   en: 'Voice Assistant',
@@ -47,21 +55,28 @@ const NOT_SUPPORTED: Record<Language, string> = {
 };
 
 export function VoiceAssistant({ onNavigate }: VoiceAssistantProps) {
-  const { appLanguage } = useLanguage();
+  const { appLanguage, setAppLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [hasGreeted, setHasGreeted] = useState(false);
+  const [showLangPicker, setShowLangPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const handleLanguageChange = (lang: Language) => {
+    setAppLanguage(lang);
+  };
 
   const {
     status,
     messages,
     isSupported,
     errorMessage,
+    voiceLang,
     startListening,
     stopListening,
     greet,
     clearMessages,
-  } = useVoiceAssistant({ language: appLanguage, onNavigate });
+    switchVoiceLanguage,
+  } = useVoiceAssistant({ language: appLanguage, onNavigate, onLanguageChange: handleLanguageChange });
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -131,33 +146,68 @@ export function VoiceAssistant({ onNavigate }: VoiceAssistantProps) {
         <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 voice-panel-enter">
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col" style={{ maxHeight: '70vh' }}>
             {/* Header */}
-            <div className="bg-gradient-to-r from-orange-500 via-orange-400 to-emerald-500 px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full bg-white/20 flex items-center justify-center ${isSpeaking ? 'voice-speaking-ring' : ''}`}>
-                  <Volume2 className="w-4 h-4 text-white" />
+            <div className="bg-gradient-to-r from-orange-500 via-orange-400 to-emerald-500 px-4 py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-full bg-white/20 flex items-center justify-center ${isSpeaking ? 'voice-speaking-ring' : ''}`}>
+                    <Volume2 className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-sm leading-tight">
+                      {PANEL_TITLE[voiceLang]}
+                    </h3>
+                    <span className="text-white/80 text-[10px]">
+                      {isListening
+                        ? `${LISTENING_LABEL[voiceLang]} (${LANG_FLAG_LABELS[voiceLang].native})`
+                        : isSpeaking
+                          ? '🔊'
+                          : isProcessing
+                            ? '...'
+                            : LANG_FLAG_LABELS[voiceLang].native}
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-white font-bold text-sm leading-tight">
-                    {PANEL_TITLE[appLanguage]}
-                  </h3>
-                  <span className="text-white/80 text-[10px]">
-                    {isListening
-                      ? LISTENING_LABEL[appLanguage]
-                      : isSpeaking
-                        ? '🔊'
-                        : isProcessing
-                          ? '...'
-                          : 'EktaMandi'}
-                  </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setShowLangPicker(!showLangPicker)}
+                    className={`p-1.5 rounded-lg transition-colors ${showLangPicker ? 'bg-white/30' : 'hover:bg-white/20'}`}
+                    title="Switch language"
+                  >
+                    <Languages className="w-4 h-4 text-white" />
+                  </button>
+                  <button
+                    onClick={handleClear}
+                    className="p-1.5 rounded-lg hover:bg-white/20 transition-colors"
+                    title="Clear chat"
+                  >
+                    <Trash2 className="w-4 h-4 text-white/80" />
+                  </button>
                 </div>
               </div>
-              <button
-                onClick={handleClear}
-                className="p-1.5 rounded-lg hover:bg-white/20 transition-colors"
-                title="Clear chat"
-              >
-                <Trash2 className="w-4 h-4 text-white/80" />
-              </button>
+
+              {/* Language Quick-Switch Bar */}
+              {showLangPicker && (
+                <div className="flex gap-1 mt-2 pt-2 border-t border-white/20">
+                  {(['en', 'hi', 'te', 'ta', 'bn'] as Language[]).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => {
+                        switchVoiceLanguage(lang);
+                        setShowLangPicker(false);
+                      }}
+                      className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
+                        voiceLang === lang
+                          ? 'bg-white text-orange-600 shadow-sm'
+                          : 'bg-white/15 text-white hover:bg-white/25'
+                      }`}
+                      title={LANG_FLAG_LABELS[lang].native}
+                    >
+                      <span className="block text-xs">{LANG_FLAG_LABELS[lang].short}</span>
+                      <span className="block opacity-80 leading-tight">{LANG_FLAG_LABELS[lang].native}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Messages */}
@@ -174,7 +224,10 @@ export function VoiceAssistant({ onNavigate }: VoiceAssistantProps) {
                   <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3">
                     <Mic className="w-6 h-6 text-orange-500" />
                   </div>
-                  <p className="text-sm text-slate-500">{TAP_TO_SPEAK[appLanguage]}</p>
+                  <p className="text-sm text-slate-500">{TAP_TO_SPEAK[voiceLang]}</p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    🌐 {LANG_FLAG_LABELS[voiceLang].native}
+                  </p>
                 </div>
               )}
 
@@ -203,25 +256,42 @@ export function VoiceAssistant({ onNavigate }: VoiceAssistantProps) {
 
             {/* Mic Button Footer */}
             {isSupported && (
-              <div className="p-3 bg-white border-t border-slate-100 flex justify-center">
-                <button
-                  onClick={handleMicClick}
-                  disabled={isSpeaking || isProcessing}
-                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isListening
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-200 voice-mic-listening'
-                      : isSpeaking || isProcessing
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : 'bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-200 hover:scale-105'
-                  }`}
-                  title={isListening ? 'Stop' : 'Speak'}
-                >
-                  {isListening ? (
-                    <MicOff className="w-6 h-6" />
-                  ) : (
-                    <Mic className="w-6 h-6" />
-                  )}
-                </button>
+              <div className="p-3 bg-white border-t border-slate-100">
+                <div className="flex items-center justify-center gap-3">
+                  {/* Language badge */}
+                  <button
+                    onClick={() => setShowLangPicker(!showLangPicker)}
+                    className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors text-[10px] font-bold text-slate-600"
+                    title="Switch voice language"
+                  >
+                    🌐 {LANG_FLAG_LABELS[voiceLang].short}
+                  </button>
+
+                  {/* Mic button */}
+                  <button
+                    onClick={handleMicClick}
+                    disabled={isSpeaking || isProcessing}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      isListening
+                        ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-200 voice-mic-listening'
+                        : isSpeaking || isProcessing
+                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                          : 'bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg shadow-orange-200 hover:scale-105'
+                    }`}
+                    title={isListening ? 'Stop' : `Speak (${LANG_FLAG_LABELS[voiceLang].native})`}
+                  >
+                    {isListening ? (
+                      <MicOff className="w-6 h-6" />
+                    ) : (
+                      <Mic className="w-6 h-6" />
+                    )}
+                  </button>
+
+                  {/* Current language label */}
+                  <span className="text-[10px] text-slate-400 font-medium w-10 text-center">
+                    {LANG_FLAG_LABELS[voiceLang].native}
+                  </span>
+                </div>
               </div>
             )}
           </div>
