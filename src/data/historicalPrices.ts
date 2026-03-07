@@ -49,11 +49,14 @@ function generateSeries(
         return (seed % 10000) / 10000;
     };
 
-    const startYear = 2024;
-    const startMonth = 0; // January
-    const endYear = 2026;
-    const endMonth = 1; // February 2026
+    const now = new Date();
+    // End historical data in the previous month (we predict from current month onwards)
+    const endYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    const endMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
 
+    // Give 2 years of historical data
+    const startYear = endYear - 2;
+    const startMonth = endMonth;
     for (let y = startYear; y <= endYear; y++) {
         const mEnd = y === endYear ? endMonth : 11;
         const mStart = y === startYear ? startMonth : 0;
