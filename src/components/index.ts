@@ -28,6 +28,7 @@ export { PriceCalculator } from './PriceCalculator';
 export { MarketInsights } from './MarketInsights';
 export { PricePredictionComponent } from './PricePrediction';
 export { SmartPriceRecommendationComponent } from './SmartPriceRecommendation';
+export { PriceAnalysisTab } from './PriceAnalysisTab';
 
 // Negotiation Module
 export { NegotiationTab } from './NegotiationTab';

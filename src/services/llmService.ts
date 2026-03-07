@@ -58,9 +58,26 @@ function getLLMConfig(): LLMConfig {
   return { provider: 'none' };
 }
 
+// --- Weather Data Fetching ---
+
+async function getWeatherData(): Promise<string> {
+  try {
+    // Fetch real-time weather for a general central location in India (e.g., Delhi, to serve as an example if geolocation isn't available)
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&timezone=Asia%2FKolkata');
+    if (!res.ok) return 'Weather data unavailable';
+    const data = await res.json();
+    const t = data.current.temperature_2m;
+    const h = data.current.relative_humidity_2m;
+    const p = data.current.precipitation;
+    return `Current Weather (Delhi region proxy): ${t}°C, Humidity: ${h}%, Precipitation: ${p}mm.`;
+  } catch (err) {
+    return 'Weather data temporarily unavailable.';
+  }
+}
+
 // --- System prompt builder ---
 
-function buildSystemPrompt(language: Language): string {
+async function buildSystemPrompt(language: Language): Promise<string> {
   const langNames: Record<Language, string> = {
     en: 'English', hi: 'Hindi', te: 'Telugu', ta: 'Tamil', bn: 'Bengali',
   };
@@ -68,37 +85,43 @@ function buildSystemPrompt(language: Language): string {
   // Build commodity context for the AI
   const commodityInfo = COMMODITIES.map(c => {
     const pd = getPriceData(c);
-    return `${getCommodityName(c, language)} (${getCommodityName(c, 'en')}): ₹${pd.minPrice}-₹${pd.maxPrice}/${c.unit}, trend: ${pd.trend}`;
+    return `${getCommodityName(c, language)}: ₹${pd.minPrice} to ₹${pd.maxPrice}/${c.unit}. (Avg: ₹${pd.avgPrice}, Trend: ${pd.trend})`;
   }).join('\n');
 
   const month = new Date().getMonth();
-  const seasonName = month >= 5 && month <= 9 ? 'Kharif (Monsoon)' 
-    : month >= 10 || month <= 1 ? 'Rabi (Winter)' 
-    : 'Zaid (Summer)';
+  const seasonName = month >= 5 && month <= 9 ? 'Kharif (Monsoon)'
+    : month >= 10 || month <= 1 ? 'Rabi (Winter)'
+      : 'Zaid (Summer)';
 
-  return `You are EktaMandi's multilingual voice assistant for Indian agricultural markets (mandis).
+  const weatherData = await getWeatherData();
 
-IMPORTANT RULES:
-- Respond ONLY in ${langNames[language]}. Do not mix languages unless the user code-switches.
-- Keep responses SHORT (2-4 sentences max) since they will be spoken aloud via text-to-speech.
-- Be warm, helpful, and practical. You help farmers and traders.
-- Use ₹ for prices. Use Indian number formatting.
-- If asked about a commodity, use the real price data below.
-- You can help with: commodity prices, negotiation advice, farming tips, weather impact, market trends, buying/selling guidance, and general mandi questions.
-- If user wants to navigate to a page, include one of these exact tags: [NAV:price-discovery] [NAV:negotiation] [NAV:smart-match]
-- If user wants to switch language, include: [LANG:hi] [LANG:en] [LANG:te] [LANG:ta] [LANG:bn]
+  return `You are EktaMandi's highly intelligent, friendly, and practical voice assistant for Indian agricultural markets. Your name is "Krishi".
 
-CURRENT MARKET DATA (${new Date().toLocaleDateString('en-IN')}):
+CRITICAL RULES:
+1. You MUST respond ONLY in ${langNames[language]}. Do not mix languages unless the user explicitly code-switches. Use highly natural, colloquial speech avoiding stiff, mechanical translations.
+2. Keep responses CONCISE (2-4 sentences max). You are speaking aloud via text-to-speech, so brevity and flow are vital.
+3. Be warm, empathetic, and encouraging. Your goal is to help Indian farmers protect their livelihoods and secure fair prices.
+4. Always use '₹' for prices. When speaking, phrase numbers naturally in ${langNames[language]}.
+5. Rely STRICTLY on the real-time market and weather data provided below. Do not hallucinate prices.
+6. Provide actionable advice (e.g., "Prices are dipping, maybe wait a bit to sell" or "Humidity is high, ensure grains are stored dry").
+7. To navigate the user's screen implicitly, include ONE of these exact tags at the very end of your response: 
+   [NAV:price-discovery] for checking commodity markets
+   [NAV:price-analysis] for deep price analysis, charts, historical trends, and price predictions
+   [NAV:negotiation] for practicing bargaining skills
+   [NAV:smart-match] to find immediate buyers or sellers
+8. To switch your speaking language based on user request, include: [LANG:hi] [LANG:en] [LANG:te] [LANG:ta] [LANG:bn]
+9. NEVER output markdown (like **bold** or *italics*), bullet points, or lists. Speak in simple, continuous sentences so the voice synthesizer acts musically.
+
+CURRENT STATUS (${new Date().toLocaleDateString('en-IN')}):
 Season: ${seasonName}
+${weatherData}
+
+MARKET PRICES:
 ${commodityInfo}
 
-NEGOTIATION TIPS:
-- Start with a fair counter-offer (10-15% below asking)
-- Emphasize quality and freshness
-- Offer bulk discounts for large orders
-- Build long-term relationships
-- Know the current market rate before negotiating
-- Timing matters: buy during glut, sell during shortage`;
+PRO TIPS:
+- If a farmer is negotiating, remind them to highlight crop quality or offer bulk discounts.
+- Always sound confident and supportive.`;
 }
 
 // --- Groq API ---
@@ -117,8 +140,8 @@ async function callGroq(
       body: JSON.stringify({
         model: config.model || 'llama-3.3-70b-versatile',
         messages: messages,
-        max_tokens: 200,
-        temperature: 0.7,
+        max_tokens: 300,
+        temperature: 0.6,
         top_p: 0.9,
       }),
     });
@@ -151,8 +174,8 @@ async function callBedrockProxy(
       body: JSON.stringify({
         model: config.model,
         messages: messages,
-        max_tokens: 200,
-        temperature: 0.7,
+        max_tokens: 300,
+        temperature: 0.6,
       }),
     });
 
@@ -201,7 +224,7 @@ export async function getAIResponse(
   const config = getLLMConfig();
   if (config.provider === 'none') return null;
 
-  const systemPrompt = buildSystemPrompt(language);
+  const systemPrompt = await buildSystemPrompt(language);
 
   const messages: ConversationMessage[] = [
     { role: 'system', content: systemPrompt },

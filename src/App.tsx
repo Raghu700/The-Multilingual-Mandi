@@ -1,6 +1,6 @@
 /**
- * App Component - With Authentication
- * Clean layout with proper scrolling and auth protection
+ * App Component - With Authentication & Theme Support
+ * Clean layout with proper scrolling, auth protection, and dark/read mode
  */
 
 import { useState, useCallback } from 'react';
@@ -10,6 +10,7 @@ import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -23,10 +24,13 @@ function AppContent() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-emerald-50">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: 'var(--bg-base)' }}
+      >
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Loading EktaMandi...</p>
+          <div className="w-12 h-12 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-base font-medium" style={{ color: 'var(--text-secondary)' }}>Loading EktaMandi...</p>
         </div>
       </div>
     );
@@ -41,21 +45,20 @@ function AppContent() {
     );
   }
 
-  // Show main app if authenticated
+  // Main app
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-orange-50/30 via-white to-emerald-50/30 w-full max-w-full overflow-x-hidden">
-      {/* Header - Fixed */}
+    <div
+      className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden"
+      style={{ backgroundColor: 'var(--bg-base)' }}
+    >
       <Header />
 
-      {/* Main Content - Scrollable */}
       <main className="flex-1 overflow-y-auto overflow-x-hidden">
         <TabNavigation externalActiveTab={voiceTab} onTabChange={() => setVoiceTab(undefined)} />
       </main>
 
-      {/* Footer - Fixed at bottom */}
       <Footer />
 
-      {/* Voice Assistant - Floating */}
       <VoiceAssistant onNavigate={handleVoiceNavigate} />
     </div>
   );
@@ -63,11 +66,13 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <LanguageProvider>
-        <AppContent />
-      </LanguageProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

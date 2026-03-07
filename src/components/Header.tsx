@@ -1,10 +1,12 @@
 /**
- * Header Component - Konark Chakra Edition
- * Uses the Chakra (Wheel of Time/Progress) as the primary symbol
+ * Header Component — Clean & Dense
+ * Lichess-inspired: compact, clear, no wasted space
+ * Includes theme toggle (light / dark / read)
  */
 
-import { Globe, ChevronDown, LogOut, User } from 'lucide-react';
+import { Globe, ChevronDown, LogOut, User, Sun, Moon, BookOpen } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme, ThemeMode } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Language } from '../types';
 
@@ -16,108 +18,126 @@ const LANGUAGES: { code: Language; nativeName: string }[] = [
   { code: 'bn', nativeName: 'বাংলা' },
 ];
 
+const THEME_ICONS: Record<ThemeMode, typeof Sun> = {
+  light: Sun,
+  dark: Moon,
+  read: BookOpen,
+};
+
+const THEME_LABELS: Record<ThemeMode, string> = {
+  light: 'Light',
+  dark: 'Dark',
+  read: 'Read',
+};
+
 export function Header() {
   const { appLanguage, setAppLanguage } = useLanguage();
+  const { theme, cycleTheme } = useTheme();
   const { user, logout } = useAuth();
-
-  // Get current date dynamically
-  const getCurrentDate = () => {
-    const now = new Date();
-    const day = now.getDate();
-    const month = now.toLocaleString(appLanguage === 'en' ? 'en-US' : 'default', { month: 'long' });
-    const year = now.getFullYear();
-    
-    // Format based on language
-    if (appLanguage === 'hi') {
-      return `${day} ${month} ${year}`;
-    } else if (appLanguage === 'te') {
-      return `${day} ${month} ${year}`;
-    } else if (appLanguage === 'ta') {
-      return `${day} ${month} ${year}`;
-    } else if (appLanguage === 'bn') {
-      return `${day} ${month} ${year}`;
-    }
-    return `${day} ${month} ${year}`;
-  };
+  const ThemeIcon = THEME_ICONS[theme];
 
   return (
-    <header className="bg-white/95 backdrop-blur-xl border-b border-slate-100 sticky top-0 z-50">
-      {/* Tricolor top border - subtle */}
-      <div className="h-1 bg-gradient-to-r from-[#FF9933] via-white to-[#138808] opacity-80"></div>
+    <header
+      className="sticky top-0 z-50 border-b"
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        borderColor: 'var(--border-default)',
+      }}
+    >
+      {/* Tricolor top accent */}
+      <div
+        className="h-[3px]"
+        style={{
+          background: `linear-gradient(to right, #FF9933, ${theme === 'dark' ? '#444' : '#fff'}, #138808)`,
+        }}
+      ></div>
 
-      <div className="max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2">
         <div className="flex items-center justify-between">
-          {/* Brand Identity */}
-          <div className="flex items-center gap-1.5 sm:gap-3 group cursor-pointer">
-            {/* Ashoka Chakra SVG - Navy Blue */}
-            <div className="relative w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center transition-transform duration-700 ease-in-out group-hover:rotate-180">
-              <svg viewBox="0 0 24 24" className="w-full h-full text-[#A63A2E]" fill="currentColor">
-                {/* Outer Circle */}
+          {/* Brand */}
+          <div className="flex items-center gap-2 sm:gap-3 group cursor-pointer select-none">
+            {/* Ashoka Chakra */}
+            <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center transition-transform duration-700 ease-in-out group-hover:rotate-180">
+              <svg viewBox="0 0 24 24" className="w-full h-full" style={{ color: theme === 'dark' ? '#e87461' : '#A63A2E' }} fill="currentColor">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                {/* Inner Hub */}
                 <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                {/* 24 Spokes (Simplified to 12 visible for clean icon, or fully draw lines) */}
                 {[...Array(24)].map((_, i) => (
                   <line
                     key={i}
-                    x1="12"
-                    y1="12"
+                    x1="12" y1="12"
                     x2={12 + 9 * Math.cos((i * 15 * Math.PI) / 180)}
                     y2={12 + 9 * Math.sin((i * 15 * Math.PI) / 180)}
-                    stroke="currentColor"
-                    strokeWidth="0.8"
-                    strokeLinecap="round"
+                    stroke="currentColor" strokeWidth="0.8" strokeLinecap="round"
                   />
                 ))}
-                {/* Decorative border dots */}
                 {[...Array(24)].map((_, i) => (
                   <circle
                     key={`dot-${i}`}
                     cx={12 + 8.5 * Math.cos(((i * 15 + 7.5) * Math.PI) / 180)}
                     cy={12 + 8.5 * Math.sin(((i * 15 + 7.5) * Math.PI) / 180)}
-                    r="0.5"
-                    fill="currentColor"
+                    r="0.5" fill="currentColor"
                   />
                 ))}
               </svg>
             </div>
 
-            <div className="flex flex-col">
-              <h1 className="text-sm sm:text-xl font-extrabold text-[#1e2c56] tracking-tight leading-none">
+            <div>
+              <h1
+                className="text-base sm:text-lg font-extrabold leading-none tracking-tight"
+                style={{ color: 'var(--text-primary)' }}
+              >
                 EktaMandi
               </h1>
-              <span className="text-[9px] sm:text-xs font-bold text-orange-600 tracking-wide hidden sm:block">
-                (एकता मंडी)
+              <span
+                className="text-[10px] sm:text-xs font-semibold hidden sm:block"
+                style={{ color: 'var(--primary)' }}
+              >
+                एकता मंडी
               </span>
             </div>
           </div>
 
-          {/* Right: User Info, Date & Language */}
-          <div className="flex items-center gap-1 sm:gap-3">
-            {/* User Info */}
+          {/* Controls */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* User badge */}
             {user && (
-              <div className="flex items-center gap-1 px-1.5 sm:px-3 py-1 sm:py-2 bg-emerald-50 border border-emerald-100 rounded-lg sm:rounded-xl">
-                <User className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600" />
-                <span className="text-[10px] sm:text-xs font-semibold text-emerald-800 hidden sm:inline">{user.name}</span>
+              <div
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold"
+                style={{
+                  backgroundColor: 'rgba(16,185,129,0.08)',
+                  color: '#059669',
+                  border: '1px solid rgba(16,185,129,0.15)',
+                }}
+              >
+                <User className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{user.name}</span>
               </div>
             )}
 
-            {/* Date Badge */}
-            <div className="flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-0.5 sm:py-1.5 bg-orange-50/50 border border-orange-100 rounded-full">
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
-              <span className="text-[9px] sm:text-xs font-semibold text-orange-700 whitespace-nowrap">
-                {getCurrentDate()}
-              </span>
-            </div>
+            {/* Theme Toggle */}
+            <button
+              onClick={cycleTheme}
+              className="theme-toggle"
+              title={`Switch to ${THEME_LABELS[theme === 'light' ? 'dark' : theme === 'dark' ? 'read' : 'light']} mode`}
+            >
+              <ThemeIcon className="w-4 h-4" />
+            </button>
 
             {/* Language Selector */}
             <div className="relative">
-              <div className="flex items-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1 sm:py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg sm:rounded-xl transition-all cursor-pointer group">
-                <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500 group-hover:text-slate-700" />
+              <div
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg cursor-pointer"
+                style={{
+                  backgroundColor: 'var(--bg-surface-alt)',
+                  border: '1px solid var(--border-default)',
+                }}
+              >
+                <Globe className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
                 <select
                   value={appLanguage}
                   onChange={(e) => setAppLanguage(e.target.value as Language)}
-                  className="bg-transparent text-slate-700 font-medium text-[10px] sm:text-sm cursor-pointer outline-none appearance-none pr-3 sm:pr-6 max-w-[55px] sm:max-w-none"
+                  className="bg-transparent font-medium text-xs sm:text-sm cursor-pointer outline-none appearance-none pr-4 min-h-0"
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   {LANGUAGES.map((lang) => (
                     <option key={lang.code} value={lang.code}>
@@ -125,18 +145,22 @@ export function Header() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 pointer-events-none" />
+                <ChevronDown className="w-3 h-3 absolute right-2 pointer-events-none" style={{ color: 'var(--text-muted)' }} />
               </div>
             </div>
 
-            {/* Logout Button */}
+            {/* Logout */}
             <button
               onClick={logout}
-              className="flex items-center px-1.5 sm:px-3 py-1 sm:py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg sm:rounded-xl transition-all text-rose-700 hover:text-rose-800"
+              className="flex items-center px-2 py-1.5 rounded-lg transition-all"
+              style={{
+                backgroundColor: 'rgba(239,68,68,0.06)',
+                border: '1px solid rgba(239,68,68,0.15)',
+                color: '#dc2626',
+              }}
               title="Logout"
             >
               <LogOut className="w-4 h-4" />
-              <span className="text-sm font-medium hidden lg:inline">Logout</span>
             </button>
           </div>
         </div>

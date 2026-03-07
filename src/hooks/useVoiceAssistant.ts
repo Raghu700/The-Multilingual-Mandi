@@ -114,11 +114,15 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
       for (const lang of ALL_LANGUAGES) {
         const langCode = LANG_CODES[lang];
         const shortCode = lang === 'en' ? 'en' : langCode.split('-')[0];
-        // Prefer native voices, then any matching voice
+        // Prefer natural voices first, then Google voices, then native voices
+        const natural = voices.find(v => v.lang.startsWith(shortCode) && v.name.toLowerCase().includes('natural'));
+        const google = voices.find(v => v.lang.startsWith(shortCode) && v.name.toLowerCase().includes('google'));
         const native = voices.find(v => v.lang === langCode && !v.localService === false);
         const exact = voices.find(v => v.lang === langCode);
         const partial = voices.find(v => v.lang.startsWith(shortCode));
-        const best = native || exact || partial;
+
+        // In Edge and Chrome, 'Microsoft Swara Online (Natural) - Hindi (India)' etc. represent the best voices
+        const best = natural || google || native || exact || partial;
         if (best) cache.set(lang, best);
       }
       voiceCacheRef.current = cache;
@@ -332,7 +336,7 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
     }
 
     // --- Quantity calculator: "price of 50 kg rice", "100 kg wheat price" ---
-    const qtyMatch = lower.match(/(\d+)\s*(?:kg|kilogram|किलो|కిలో|கிலோ|কেজি|dozen|दर्जन|డజను|டஜன்|ডজন|liter|litre|लीटर|లీటర్|லிட்டர்|লিটার)\s*/i) 
+    const qtyMatch = lower.match(/(\d+)\s*(?:kg|kilogram|किलो|కిలో|கிலோ|কেজি|dozen|दर्जन|డజను|டஜன்|ডজন|liter|litre|लीटर|లీటర్|லிட்டர்|লিটার)\s*/i)
       || lower.match(/(\d+)\s+/);
     if (qtyMatch) {
       const qty = parseInt(qtyMatch[1]);
@@ -463,6 +467,22 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
       return;
     }
 
+    // --- Navigation: price analysis / prediction ---
+    if (matchesAny(lower, [
+      'analysis', 'analyze', 'analyse', 'prediction', 'predict', 'forecast', 'trend analysis', 'price analysis',
+      'historical', 'history', 'chart', 'graph', 'seasonal', 'deep analysis',
+      'विश्लेषण', 'भविष्यवाणी', 'अनुमान', 'चार्ट', 'ग्राफ', 'मौसमी',
+      'విశ్లేషణ', 'అంచనా', 'చార్ట్',
+      'பகுப்பாய்வு', 'கணிப்பு',
+      'বিশ্লেষণ', 'পূর্বাভাস',
+    ])) {
+      navigate?.('price-analysis');
+      const reply = getNavReply('price-analysis', lang);
+      addMessage(reply, 'assistant');
+      speak(reply);
+      return;
+    }
+
     // --- Navigation: prices ---
     if (matchesAny(lower, [
       'price', 'prices', 'rate', 'rates', 'cost', 'how much', 'show price', 'go to price', 'check price',
@@ -496,10 +516,11 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
     // --- Navigation: smart match ---
     if (matchesAny(lower, [
       'smart match', 'match', 'find buyer', 'find seller', 'connect', 'go to smart',
-      'स्मार्ट मैच', 'खोजो', 'मिलाओ',
-      'స్మార్ట్', 'కనుగొను',
-      'ஸ்மார்ட்', 'கண்டுபிடி',
-      'স্মার্ট', 'খুঁজে',
+      'where to', 'where can i', 'location',
+      'स्मार्ट मैच', 'खोजो', 'मिलाओ', 'कहाँ', 'कहा', 'कहाँ मिलेंगे', 'कहा मिलेंगे', 'कहां मिलेगा',
+      'స్మార్ట్', 'కనుగొను', 'ఎక్కడ',
+      'ஸ்மார்ட்', 'கண்டுபிடி', 'எங்கே',
+      'স্মার্ট', 'খুঁজে', 'কোথায়',
     ])) {
       navigate?.('smart-match');
       const reply = getNavReply('smart-match', lang);
@@ -653,11 +674,12 @@ export function useVoiceAssistant({ language, onNavigate, onLanguageChange }: Us
     updateStatus('idle');
   }, [updateStatus]);
 
-  // Greet on open (text only, no TTS to avoid blocking mic)
+  // Greet on open
   const greet = useCallback(() => {
     const greeting = GREETINGS[voiceLangRef.current];
     addMessage(greeting, 'assistant');
-  }, [addMessage]);
+    speak(greeting);
+  }, [addMessage, speak]);
 
   // Clear messages and conversation history
   const clearMessages = useCallback(() => {
@@ -711,6 +733,13 @@ function getNavReply(tab: string, lang: Language): string {
       te: 'ధరల ట్యాబ్‌కి వెళ్తున్నాం.',
       ta: 'விலை தாவலுக்கு செல்கிறோம்.',
       bn: 'দাম ট্যাবে যাচ্ছি।',
+    },
+    'price-analysis': {
+      en: 'Opening Price Analysis with charts and predictions.',
+      hi: 'मूल्य विश्लेषण खोल रहे हैं, चार्ट और भविष्यवाणी के साथ।',
+      te: 'చార్ట్లు మరియు అంచనాలతో ధర విశ్లేషణ తెరుస్తున్నాం.',
+      ta: 'விலை பகுப்பாய்வு தாவலை திறக்கிறோம்.',
+      bn: 'চার্ট ও পূর্বাভাস সহ মূল্য বিশ্লেষণ খুলছি।',
     },
     'negotiation': {
       en: 'Navigating to Negotiation tab.',
@@ -1057,25 +1086,25 @@ function getSeasonalAdvice(lang: Language): string {
     season = lang === 'en' ? 'Kharif (Monsoon)' : lang === 'hi' ? 'खरीफ (मानसून)' : lang === 'te' ? 'ఖరీఫ్ (వర్షాకాలం)' : lang === 'ta' ? 'கரீப் (பருவமழை)' : 'খরিফ (বর্ষা)';
     crops = lang === 'en' ? 'Rice, Cotton, Sugarcane, Turmeric, Chili are ideal. Prices typically drop after harvest (Oct-Nov), so consider selling early or storing.'
       : lang === 'hi' ? 'चावल, कपास, गन्ना, हल्दी, मिर्च आदर्श हैं। कटाई (अक्टू-नवं) के बाद दाम गिरते हैं, इसलिए जल्दी बेचें या स्टोर करें।'
-      : lang === 'te' ? 'బియ్యం, పత్తి, చెరకు, పసుపు, మిరపకాయ అనుకూలం. పంట తర్వాత (అక్టో-నవం) ధరలు తగ్గుతాయి.'
-      : lang === 'ta' ? 'அரிசி, பருத்தி, கரும்பு, மஞ்சள், மிளகாய் சிறந்தவை. அறுவடைக்குப் பிறகு விலை குறையும்.'
-      : 'চাল, তুলা, আখ, হলুদ, মরিচ আদর্শ। ফসল কাটার পর দাম কমে।';
+        : lang === 'te' ? 'బియ్యం, పత్తి, చెరకు, పసుపు, మిరపకాయ అనుకూలం. పంట తర్వాత (అక్టో-నవం) ధరలు తగ్గుతాయి.'
+          : lang === 'ta' ? 'அரிசி, பருத்தி, கரும்பு, மஞ்சள், மிளகாய் சிறந்தவை. அறுவடைக்குப் பிறகு விலை குறையும்.'
+            : 'চাল, তুলা, আখ, হলুদ, মরিচ আদর্শ। ফসল কাটার পর দাম কমে।';
   } else if (month >= 10 || month <= 1) {
     // Rabi season (November-February)
     season = lang === 'en' ? 'Rabi (Winter)' : lang === 'hi' ? 'रबी (सर्दी)' : lang === 'te' ? 'రబీ (శీతాకాలం)' : lang === 'ta' ? 'ரபி (குளிர்காலம்)' : 'রবি (শীতকাল)';
     crops = lang === 'en' ? 'Wheat, Lentils, Potatoes, Onions, Coriander are ideal. Winter crops fetch good prices in March-April after harvest.'
       : lang === 'hi' ? 'गेहूं, दाल, आलू, प्याज, धनिया आदर्श हैं। सर्दी की फसलों का मार्च-अप्रैल में अच्छा भाव मिलता है।'
-      : lang === 'te' ? 'గోధుమ, పప్పు, బంగాళాదుంప, ఉల్లిపాయ, కొత్తిమీర అనుకూలం. మార్చి-ఏప్రిల్‌లో మంచి ధరలు.'
-      : lang === 'ta' ? 'கோதுமை, பருப்பு, உருளைக்கிழங்கு, வெங்காயம், கொத்தமல்லி சிறந்தவை. மார்ச்-ஏப்ரல் நல்ல விலை.'
-      : 'গম, ডাল, আলু, পেঁয়াজ, ধনে আদর্শ। মার্চ-এপ্রিলে ভালো দাম পাওয়া যায়।';
+        : lang === 'te' ? 'గోధుమ, పప్పు, బంగాళాదుంప, ఉల్లిపాయ, కొత్తిమీర అనుకూలం. మార్చి-ఏప్రిల్‌లో మంచి ధరలు.'
+          : lang === 'ta' ? 'கோதுமை, பருப்பு, உருளைக்கிழங்கு, வெங்காயம், கொத்தமல்லி சிறந்தவை. மார்ச்-ஏப்ரல் நல்ல விலை.'
+            : 'গম, ডাল, আলু, পেঁয়াজ, ধনে আদর্শ। মার্চ-এপ্রিলে ভালো দাম পাওয়া যায়।';
   } else {
     // Zaid season (March-May)
     season = lang === 'en' ? 'Zaid (Summer)' : lang === 'hi' ? 'जायद (गर्मी)' : lang === 'te' ? 'జాయద్ (వేసవి)' : lang === 'ta' ? 'ஜாய்த் (கோடைகாலம்)' : 'জায়েদ (গ্রীষ্মকাল)';
     crops = lang === 'en' ? 'Mangoes, Bananas, Tomatoes are in demand. Summer vegetables fetch premium prices due to heat-related supply drops.'
       : lang === 'hi' ? 'आम, केला, टमाटर की मांग है। गर्मी में सब्जियों का भाव बढ़ता है।'
-      : lang === 'te' ? 'మామిడి, అరటి, టమోటా డిమాండ్‌లో ఉన్నాయి. వేసవిలో కూరగాయల ధరలు పెరుగుతాయి.'
-      : lang === 'ta' ? 'மாம்பழம், வாழைப்பழம், தக்காளி தேவை அதிகம். கோடையில் காய்கறி விலை அதிகரிக்கும்.'
-      : 'আম, কলা, টমেটো চাহিদায় আছে। গরমে সবজির দাম বাড়ে।';
+        : lang === 'te' ? 'మామిడి, అరటి, టమోటా డిమాండ్‌లో ఉన్నాయి. వేసవిలో కూరగాయల ధరలు పెరుగుతాయి.'
+          : lang === 'ta' ? 'மாம்பழம், வாழைப்பழம், தக்காளி தேவை அதிகம். கோடையில் காய்கறி விலை அதிகரிக்கும்.'
+            : 'আম, কলা, টমেটো চাহিদায় আছে। গরমে সবজির দাম বাড়ে।';
   }
 
   const replies: Record<Language, string> = {
