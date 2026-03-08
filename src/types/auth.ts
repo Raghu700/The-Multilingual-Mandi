@@ -5,9 +5,12 @@ export interface User {
   email: string;
   name: string;
   phone?: string;
-  role: 'vendor' | 'buyer';
+  mobile?: string;
+  role: 'vendor' | 'buyer' | 'farmer' | 'fpo_admin';
   preferredLanguage: string;
   createdAt: string;
+  isDemo?: boolean;
+  lastLogin?: string;
 }
 
 export interface AuthState {
@@ -26,6 +29,6 @@ export interface RegisterData {
   password: string;
   name: string;
   phone?: string;
-  role: 'vendor' | 'buyer';
+  role: 'vendor' | 'buyer' | 'farmer' | 'fpo_admin';
   preferredLanguage: string;
 }

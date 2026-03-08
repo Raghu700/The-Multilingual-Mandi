@@ -1,64 +1,54 @@
 /**
- * LanguageSelector Component
- * Allows users to select target language for translation
- * Displays languages in both English and native script
+ * Language Selector Component
+ * Allows users to switch between English, Hindi, Bengali, and Marathi
  */
 
+import { useLanguage } from '../contexts/LanguageContext';
 import { Language } from '../types';
-import { REPUBLIC_DAY_BADGES } from '../utils/theme';
 
 interface LanguageSelectorProps {
-  selectedLanguage: Language;
-  onLanguageChange: (language: Language) => void;
+  position?: 'top' | 'inline';
+  showLabel?: boolean;
+  className?: string;
 }
 
-interface LanguageOption {
-  code: Language;
-  englishName: string;
-  nativeName: string;
-}
+export function LanguageSelector({ 
+  position = 'top', 
+  showLabel = true,
+  className = ''
+}: LanguageSelectorProps) {
+  const { language, setLanguage, t } = useLanguage();
 
-const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { code: 'en', englishName: 'English', nativeName: 'English' },
-  { code: 'hi', englishName: 'Hindi', nativeName: 'हिंदी' },
-  { code: 'te', englishName: 'Telugu', nativeName: 'తెలుగు' },
-  { code: 'ta', englishName: 'Tamil', nativeName: 'தமிழ்' },
-  { code: 'bn', englishName: 'Bengali', nativeName: 'বাংলা' },
-];
+  const languages = [
+    { code: 'en' as Language, name: 'English', nativeName: 'English' },
+    { code: 'hi' as Language, name: 'Hindi', nativeName: 'हिंदी' },
+    { code: 'bn' as Language, name: 'Bengali', nativeName: 'বাংলা' },
+    { code: 'te' as Language, name: 'Telugu', nativeName: 'తెలుగు' },
+    { code: 'ta' as Language, name: 'Tamil', nativeName: 'தமிழ்' }
+  ];
 
-export function LanguageSelector({ selectedLanguage, onLanguageChange }: LanguageSelectorProps) {
+  const handleLanguageChange = (langCode: Language) => {
+    setLanguage(langCode);
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Unity in Diversity Badge */}
-      <div className="flex justify-center">
-        <div className="glass-badge-saffron text-saffron font-semibold px-4 py-2">
-          {REPUBLIC_DAY_BADGES.translation}
-        </div>
-      </div>
-
-      {/* Language Selection Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-        {LANGUAGE_OPTIONS.map((lang) => (
-          <button
-            key={lang.code}
-            onClick={() => onLanguageChange(lang.code)}
-            className={`
-              glass-card p-4 text-center transition-all duration-300
-              hover:scale-105 hover:shadow-glass-lg
-              ${
-                selectedLanguage === lang.code
-                  ? 'bg-saffron text-white border-saffron shadow-glass-saffron'
-                  : 'hover:bg-glass-white-light'
-              }
-            `}
-          >
-            <div className="font-bold text-sm mb-1">{lang.englishName}</div>
-            <div className={`text-lg ${selectedLanguage === lang.code ? 'text-white' : 'text-navy-blue'}`}>
-              {lang.nativeName}
-            </div>
-          </button>
+    <div className={`language-selector ${className}`}>
+      <label htmlFor="language-select" className="sr-only">
+        {t('select_language')}
+      </label>
+      <select
+        id="language-select"
+        value={language}
+        onChange={(e) => handleLanguageChange(e.target.value as Language)}
+        aria-label={t('select_language')}
+        className="min-h-[44px] min-w-[44px] text-base px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all bg-white cursor-pointer"
+      >
+        {languages.map(lang => (
+          <option key={lang.code} value={lang.code}>
+            🌐 {lang.nativeName}
+          </option>
         ))}
-      </div>
+      </select>
     </div>
   );
 }

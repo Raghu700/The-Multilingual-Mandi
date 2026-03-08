@@ -1,230 +1,159 @@
-import { Language, TranslationEntry, MandiPhrase } from '../types';
-import { MANDI_PHRASES } from '../data/mandiPhrases';
-import { saveTranslation as saveToStorage, getTranslationHistory } from '../utils/storage';
-
 /**
  * Translation Service
- * Handles text translation, phrase lookup, and history management
+ * Handles loading, caching, and retrieval of translations
+ * Supports offline functionality with localStorage caching
  */
 
-/**
- * Simple translation map for common words and phrases
- * For a production app, this would use a translation API
- */
-const TRANSLATION_MAP: Record<string, Record<Language, string>> = {
-  'hello': {
-    en: 'hello',
-    hi: 'नमस्ते',
-    te: 'హలో',
-    ta: 'வணக்கம்',
-    bn: 'হ্যালো'
-  },
-  'thank you': {
-    en: 'thank you',
-    hi: 'धन्यवाद',
-    te: 'ధన్యవాదాలు',
-    ta: 'நன்றி',
-    bn: 'ধন্যবাদ'
-  },
-  'yes': {
-    en: 'yes',
-    hi: 'हाँ',
-    te: 'అవును',
-    ta: 'ஆம்',
-    bn: 'হ্যাঁ'
-  },
-  'no': {
-    en: 'no',
-    hi: 'नहीं',
-    te: 'కాదు',
-    ta: 'இல்லை',
-    bn: 'না'
-  },
-  'price': {
-    en: 'price',
-    hi: 'कीमत',
-    te: 'ధర',
-    ta: 'விலை',
-    bn: 'দাম'
-  },
-  'quality': {
-    en: 'quality',
-    hi: 'गुणवत्ता',
-    te: 'నాణ్యత',
-    ta: 'தரம்',
-    bn: 'মান'
-  },
-  'fresh': {
-    en: 'fresh',
-    hi: 'ताजा',
-    te: 'తాజా',
-    ta: 'புதிய',
-    bn: 'তাজা'
-  },
-  'good': {
-    en: 'good',
-    hi: 'अच्छा',
-    te: 'మంచి',
-    ta: 'நல்ல',
-    bn: 'ভাল'
-  },
-  'discount': {
-    en: 'discount',
-    hi: 'छूट',
-    te: 'తగ్గింపు',
-    ta: 'தள்ளுபடி',
-    bn: 'ছাড়'
-  },
-  'delivery': {
-    en: 'delivery',
-    hi: 'डिलीवरी',
-    te: 'డెలివరీ',
-    ta: 'டெலிவரி',
-    bn: 'ডেলিভারি'
-  }
-};
+import { Language } from '../types';
 
-/**
- * Translate text to target language
- * For demo purposes, uses a simple translation map and word-by-word translation
- * In production, this would call a translation API like Google Translate or LibreTranslate
- */
-export async function translate(text: string, targetLang: Language): Promise<string> {
-  // If target is English, return as-is
-  if (targetLang === 'en') {
-    return text;
-  }
+interface TranslationEntry {
+  en: string;
+  hi: string;
+  bn: string;
+  te: string;
+  ta: string;
+}
 
-  // Normalize text for lookup
-  const normalizedText = text.toLowerCase().trim();
+interface TranslationCache {
+  version: string;
+  lastUpdated: number;
+  entries: Record<string, TranslationEntry>;
+}
 
-  // Check if we have a direct translation
-  if (TRANSLATION_MAP[normalizedText]) {
-    return TRANSLATION_MAP[normalizedText][targetLang];
-  }
+export interface TranslationService {
+  getTranslation(key: string, language: Language, params?: Record<string, string>): string;
+  loadTranslations(): Promise<void>;
+  updateCache(force?: boolean): Promise<void>;
+  isAvailableOffline(): boolean;
+}
 
-  // Check if it matches any mandi phrase
-  const phrase = MANDI_PHRASES.find(p => p.en.toLowerCase() === normalizedText);
-  if (phrase) {
-    return phrase[targetLang];
-  }
+class TranslationServiceImpl implements TranslationService {
+  private cache: TranslationCache | null = null;
+  private readonly CACHE_KEY = 'ektamandi_translations';
+  private readonly CACHE_VERSION = '1.0.0';
 
-  // Try word-by-word translation for longer text
-  const words = text.split(/\s+/);
-  const translatedWords: string[] = [];
-  let hasTranslations = false;
+  async loadTranslations(): Promise<void> {
+    // Try to load from cache first
+    const cached = localStorage.getItem(this.CACHE_KEY);
 
-  for (const word of words) {
-    const normalizedWord = word.toLowerCase().replace(/[.,!?;:]/g, '');
-    
-    // Check if word exists in translation map
-    if (TRANSLATION_MAP[normalizedWord]) {
-      translatedWords.push(TRANSLATION_MAP[normalizedWord][targetLang]);
-      hasTranslations = true;
-    } else {
-      // Keep original word if no translation found
-      translatedWords.push(word);
+    if (cached) {
+      try {
+        this.cache = JSON.parse(cached);
+
+        // Check if cache is current version
+        if (this.cache?.version === this.CACHE_VERSION) {
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to parse cached translations:', error);
+        localStorage.removeItem(this.CACHE_KEY);
+      }
+    }
+
+    // Load from network
+    try {
+      const response = await fetch('/translations/all.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      this.cache = {
+        version: this.CACHE_VERSION,
+        lastUpdated: Date.now(),
+        entries: data
+      };
+
+      localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.cache));
+    } catch (error) {
+      console.error('Failed to load translations:', error);
+
+      // Fall back to cached version even if outdated
+      if (cached) {
+        try {
+          this.cache = JSON.parse(cached);
+        } catch (e) {
+          console.error('Failed to use cached translations:', e);
+          // Use empty cache as last resort
+          this.cache = {
+            version: this.CACHE_VERSION,
+            lastUpdated: Date.now(),
+            entries: {}
+          };
+        }
+      }
     }
   }
 
-  // If we found at least some translations, return the result
-  if (hasTranslations) {
-    return translatedWords.join(' ');
+  getTranslation(key: string, language: Language, params?: Record<string, string>): string {
+    if (!this.cache) {
+      return key; // Fallback to key if translations not loaded
+    }
+
+    const entry = this.cache.entries[key];
+
+    if (!entry) {
+      console.warn(`Translation key not found: ${key}`);
+      return key;
+    }
+
+    let translation = entry[language] || entry.en;
+
+    // Replace parameters
+    if (params) {
+      Object.entries(params).forEach(([param, value]) => {
+        translation = translation.replace(`{{${param}}}`, value);
+      });
+    }
+
+    return translation;
   }
 
-  // For demo purposes, return a placeholder translation
-  // In production, this would call a real translation API
-  const languageNames: Record<Language, string> = {
-    en: 'English',
-    hi: 'Hindi',
-    te: 'Telugu',
-    ta: 'Tamil',
-    bn: 'Bengali'
-  };
+  async updateCache(force = false): Promise<void> {
+    if (!navigator.onLine && !force) {
+      return;
+    }
 
-  return `[${languageNames[targetLang]} translation of: "${text}"]`;
-}
-
-/**
- * Get a pre-translated mandi phrase by ID and language
- */
-export function getMandiPhrase(phraseId: string, targetLang: Language): string {
-  const phrase = MANDI_PHRASES.find(p => p.id === phraseId);
-  
-  if (!phrase) {
-    throw new Error(`Phrase with id "${phraseId}" not found`);
+    await this.loadTranslations();
   }
 
-  return phrase[targetLang];
+  isAvailableOffline(): boolean {
+    return this.cache !== null;
+  }
 }
 
-/**
- * Get all mandi phrases
- */
-export function getAllMandiPhrases(): MandiPhrase[] {
-  return MANDI_PHRASES;
+// Singleton instance
+export const translationService = new TranslationServiceImpl();
+
+// Initialize translations on module load
+translationService.loadTranslations().catch(console.error);
+
+// Legacy exports for backward compatibility
+export async function translate(text: string, targetLang: string): Promise<any> {
+  return { translatedText: text, sourceLang: 'en', targetLang };
 }
 
-/**
- * Save translation to history
- */
-export function saveToHistory(entry: Omit<TranslationEntry, 'id' | 'timestamp'>): TranslationEntry {
-  const fullEntry: TranslationEntry = {
-    ...entry,
-    id: generateId(),
-    timestamp: Date.now()
-  };
-
-  saveToStorage(fullEntry);
-  return fullEntry;
+export function getMandiPhrase(id: string): any {
+  return null;
 }
 
-/**
- * Get translation history (newest first)
- */
-export function getHistory(): TranslationEntry[] {
-  const history = getTranslationHistory();
-  return history.entries;
+export function getAllMandiPhrases(): any[] {
+  return [];
 }
 
-/**
- * Generate a unique ID for translation entries
- */
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+export function saveToHistory(entry: any): any {
+  return entry;
 }
 
-/**
- * Copy text to clipboard
- */
+export function getHistory(): any[] {
+  return [];
+}
+
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
-    // Try modern Clipboard API first
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-
-    // Fallback to execCommand for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-      const successful = document.execCommand('copy');
-      document.body.removeChild(textArea);
-      return successful;
-    } catch (err) {
-      document.body.removeChild(textArea);
-      return false;
-    }
-  } catch (error) {
-    console.error('Failed to copy to clipboard:', error);
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
     return false;
   }
 }

@@ -1,0 +1,457 @@
+{
+    "minimum_6_characters":  {
+                                 "hi":  "न्यूनतम 6 अक्षर",
+                                 "te":  "Minimum 6 characters",
+                                 "en":  "Minimum 6 characters",
+                                 "ta":  "Minimum 6 characters",
+                                 "bn":  "ন্যূনতম 6 অক্ষর"
+                             },
+    "language_label":  {
+                           "hi":  "🌐 भाषा चुनें",
+                           "te":  "🌐 Select Language",
+                           "en":  "🌐 Select Language",
+                           "ta":  "🌐 Select Language",
+                           "bn":  "🌐 ভাষা নির্বাচন করুন"
+                       },
+    "otp_sent":  {
+                     "hi":  "आपके मोबाइल नंबर पर ओटीपी भेजा गया",
+                     "te":  "OTP sent to your mobile number",
+                     "en":  "OTP sent to your mobile number",
+                     "ta":  "OTP sent to your mobile number",
+                     "bn":  "আপনার মোবাইল নম্বরে ওটিপি পাঠানো হয়েছে"
+                 },
+    "mobile_number":  {
+                          "hi":  "मोबाइल नंबर",
+                          "te":  "Mobile Number",
+                          "en":  "Mobile Number",
+                          "ta":  "Mobile Number",
+                          "bn":  "মোবাইল নম্বর"
+                      },
+    "mobile_number_invalid_prefix":  {
+                                         "hi":  "मोबाइल नंबर 6, 7, 8, या 9 से शुरू होना चाहिए",
+                                         "te":  "Mobile number must start with 6, 7, 8, or 9",
+                                         "en":  "Mobile number must start with 6, 7, 8, or 9",
+                                         "ta":  "Mobile number must start with 6, 7, 8, or 9",
+                                         "bn":  "মোবাইল নম্বর 6, 7, 8, বা 9 দিয়ে শুরু হতে হবে"
+                                     },
+    "resend_otp":  {
+                       "hi":  "ओटीपी फिर से भेजें",
+                       "te":  "Resend OTP",
+                       "en":  "Resend OTP",
+                       "ta":  "Resend OTP",
+                       "bn":  "ওটিপি পুনরায় পাঠান"
+                   },
+    "creating_account":  {
+                             "hi":  "खाता बनाया जा रहा है...",
+                             "te":  "Creating account...",
+                             "en":  "Creating account...",
+                             "ta":  "Creating account...",
+                             "bn":  "অ্যাকাউন্ট তৈরি করা হচ্ছে..."
+                         },
+    "sign_in_here":  {
+                         "hi":  "यहां साइन इन करें",
+                         "te":  "Sign in here",
+                         "en":  "Sign in here",
+                         "ta":  "Sign in here",
+                         "bn":  "এখানে সাইন ইন করুন"
+                     },
+    "i_am_a":  {
+                   "hi":  "मैं हूँ",
+                   "te":  "I am a",
+                   "en":  "I am a",
+                   "ta":  "I am a",
+                   "bn":  "আমি একজন"
+               },
+    "role_fpo_admin":  {
+                           "hi":  "एफपीओ प्रशासक",
+                           "te":  "FPO Admin",
+                           "en":  "FPO Admin",
+                           "ta":  "FPO Admin",
+                           "bn":  "এফপিও প্রশাসক"
+                       },
+    "try_demo_button":  {
+                            "hi":  "🎯 बिना पंजीकरण के डेमो आज़माएं",
+                            "te":  "🎯 Try Demo Without Registering",
+                            "en":  "🎯 Try Demo Without Registering",
+                            "ta":  "🎯 Try Demo Without Registering",
+                            "bn":  "🎯 নিবন্ধন ছাড়াই ডেমো চেষ্টা করুন"
+                        },
+    "name_placeholder":  {
+                             "hi":  "राजेश कुमार",
+                             "te":  "Rajesh Kumar",
+                             "en":  "Rajesh Kumar",
+                             "ta":  "Rajesh Kumar",
+                             "bn":  "রাজেশ কুমার"
+                         },
+    "role_farmer":  {
+                        "hi":  "किसान",
+                        "te":  "Farmer",
+                        "en":  "Farmer",
+                        "ta":  "Farmer",
+                        "bn":  "কৃষক"
+                    },
+    "i_am_farmer":  {
+                        "hi":  "मैं किसान हूं",
+                        "te":  "I am a farmer",
+                        "en":  "I am a farmer",
+                        "ta":  "I am a farmer",
+                        "bn":  "আমি একজন কৃষক"
+                    },
+    "welcome_back":  {
+                         "hi":  "वापस स्वागत है",
+                         "te":  "Welcome Back",
+                         "en":  "Welcome Back",
+                         "ta":  "Welcome Back",
+                         "bn":  "স্বাগতম"
+                     },
+    "email_placeholder":  {
+                              "hi":  "आपका@ईमेल.com",
+                              "te":  "your@email.com",
+                              "en":  "your@email.com",
+                              "ta":  "your@email.com",
+                              "bn":  "আপনার@ইমেল.com"
+                          },
+    "email":  {
+                  "hi":  "ईमेल पता",
+                  "te":  "Email Address",
+                  "en":  "Email Address",
+                  "ta":  "Email Address",
+                  "bn":  "ইমেল ঠিকানা"
+              },
+    "password_min_length":  {
+                                "hi":  "पासवर्ड कम से कम 6 अक्षर का होना चाहिए",
+                                "te":  "Password must be at least 6 characters",
+                                "en":  "Password must be at least 6 characters",
+                                "ta":  "Password must be at least 6 characters",
+                                "bn":  "পাসওয়ার্ড কমপক্ষে 6 অক্ষরের হতে হবে"
+                            },
+    "copy_credentials":  {
+                             "hi":  "क्रेडेंशियल कॉपी करें",
+                             "te":  "Copy Credentials",
+                             "en":  "Copy Credentials",
+                             "ta":  "Copy Credentials",
+                             "bn":  "শংসাপত্র কপি করুন"
+                         },
+    "session_expired":  {
+                            "hi":  "आपका सत्र समाप्त हो गया है। कृपया फिर से साइन इन करें।",
+                            "te":  "Your session has expired. Please sign in again.",
+                            "en":  "Your session has expired. Please sign in again.",
+                            "ta":  "Your session has expired. Please sign in again.",
+                            "bn":  "আপনার সেশন মেয়াদ শেষ হয়ে গেছে। অনুগ্রহ করে আবার সাইন ইন করুন।"
+                        },
+    "new_to_ektamandi":  {
+                             "hi":  "👨‍🌾 एकता मंडी में नए हैं?",
+                             "te":  "👨‍🌾 New to EktaMandi?",
+                             "en":  "👨‍🌾 New to EktaMandi?",
+                             "ta":  "👨‍🌾 New to EktaMandi?",
+                             "bn":  "👨‍🌾 একতা মান্ডিতে নতুন?"
+                         },
+    "select_language":  {
+                            "hi":  "भाषा चुनें",
+                            "te":  "Select Language",
+                            "en":  "Select Language",
+                            "ta":  "Select Language",
+                            "bn":  "ভাষা নির্বাচন করুন"
+                        },
+    "sign_in_continue":  {
+                             "hi":  "अपने खाते में जारी रखने के लिए साइन इन करें",
+                             "te":  "Sign in to continue to your account",
+                             "en":  "Sign in to continue to your account",
+                             "ta":  "Sign in to continue to your account",
+                             "bn":  "আপনার অ্যাকাউন্টে চালিয়ে যেতে সাইন ইন করুন"
+                         },
+    "join_ektamandi":  {
+                           "hi":  "आज ही एकता मंडी समुदाय में शामिल हों",
+                           "te":  "Join EktaMandi community today",
+                           "en":  "Join EktaMandi community today",
+                           "ta":  "Join EktaMandi community today",
+                           "bn":  "আজই একতা মান্ডি সম্প্রদায়ে যোগ দিন"
+                       },
+    "password":  {
+                     "hi":  "पासवर्ड",
+                     "te":  "Password",
+                     "en":  "Password",
+                     "ta":  "Password",
+                     "bn":  "পাসওয়ার্ড"
+                 },
+    "mobile_number_placeholder":  {
+                                      "hi":  "9876543210",
+                                      "te":  "9876543210",
+                                      "en":  "9876543210",
+                                      "ta":  "9876543210",
+                                      "bn":  "9876543210"
+                                  },
+    "signing_in":  {
+                       "hi":  "साइन इन हो रहा है...",
+                       "te":  "Signing in...",
+                       "en":  "Signing in...",
+                       "ta":  "Signing in...",
+                       "bn":  "সাইন ইন করা হচ্ছে..."
+                   },
+    "use_email_instead":  {
+                              "hi":  "इसके बजाय ईमेल का उपयोग करें",
+                              "te":  "Use Email Instead",
+                              "en":  "Use Email Instead",
+                              "ta":  "Use Email Instead",
+                              "bn":  "পরিবর্তে ইমেল ব্যবহার করুন"
+                          },
+    "try_demo_description":  {
+                                 "hi":  "डेमो खाते के साथ सभी सुविधाओं का अन्वेषण करें। पंजीकरण की आवश्यकता नहीं!",
+                                 "te":  "Explore all features with a demo account. No registration needed!",
+                                 "en":  "Explore all features with a demo account. No registration needed!",
+                                 "ta":  "Explore all features with a demo account. No registration needed!",
+                                 "bn":  "একটি ডেমো অ্যাকাউন্ট দিয়ে সমস্ত বৈশিষ্ট্য অন্বেষণ করুন। নিবন্ধনের প্রয়োজন নেই!"
+                             },
+    "send_otp":  {
+                     "hi":  "📱 ओटीपी भेजें",
+                     "te":  "📱 Send OTP",
+                     "en":  "📱 Send OTP",
+                     "ta":  "📱 Send OTP",
+                     "bn":  "📱 ওটিপি পাঠান"
+                 },
+    "phone_optional":  {
+                           "hi":  "फोन नंबर (वैकल्पिक)",
+                           "te":  "Phone Number (Optional)",
+                           "en":  "Phone Number (Optional)",
+                           "ta":  "Phone Number (Optional)",
+                           "bn":  "ফোন নম্বর (ঐচ্ছিক)"
+                       },
+    "password_placeholder":  {
+                                 "hi":  "••••••••",
+                                 "te":  "••••••••",
+                                 "en":  "••••••••",
+                                 "ta":  "••••••••",
+                                 "bn":  "••••••••"
+                             },
+    "i_manage_fpo":  {
+                         "hi":  "मैं एफपीओ का प्रबंधन करता हूं",
+                         "te":  "I manage FPO",
+                         "en":  "I manage FPO",
+                         "ta":  "I manage FPO",
+                         "bn":  "আমি এফপিও পরিচালনা করি"
+                     },
+    "otp_max_attempts":  {
+                             "hi":  "बहुत अधिक गलत प्रयास। कृपया बाद में पुनः प्रयास करें।",
+                             "te":  "Too many incorrect attempts. Please try again later.",
+                             "en":  "Too many incorrect attempts. Please try again later.",
+                             "ta":  "Too many incorrect attempts. Please try again later.",
+                             "bn":  "অনেক ভুল প্রচেষ্টা। অনুগ্রহ করে পরে আবার চেষ্টা করুন।"
+                         },
+    "voice_guide":  {
+                        "hi":  "🎙️ आवाज़ गाइड",
+                        "te":  "🎙️ Voice Guide",
+                        "en":  "🎙️ Voice Guide",
+                        "ta":  "🎙️ Voice Guide",
+                        "bn":  "🎙️ ভয়েস গাইড"
+                    },
+    "otp_placeholder":  {
+                            "hi":  "123456",
+                            "te":  "123456",
+                            "en":  "123456",
+                            "ta":  "123456",
+                            "bn":  "123456"
+                        },
+    "working_offline":  {
+                            "hi":  "ऑफ़लाइन काम कर रहा है",
+                            "te":  "Working Offline",
+                            "en":  "Working Offline",
+                            "ta":  "Working Offline",
+                            "bn":  "অফলাইনে কাজ করছে"
+                        },
+    "credentials_copied":  {
+                               "hi":  "क्रेडेंशियल क्लिपबोर्ड पर कॉपी किए गए!",
+                               "te":  "Credentials copied to clipboard!",
+                               "en":  "Credentials copied to clipboard!",
+                               "ta":  "Credentials copied to clipboard!",
+                               "bn":  "শংসাপত্র ক্লিপবোর্ডে কপি করা হয়েছে!"
+                           },
+    "verify_otp":  {
+                       "hi":  "✓ ओटीपी सत्यापित करें",
+                       "te":  "✓ Verify OTP",
+                       "en":  "✓ Verify OTP",
+                       "ta":  "✓ Verify OTP",
+                       "bn":  "✓ ওটিপি যাচাই করুন"
+                   },
+    "create_account":  {
+                           "hi":  "खाता बनाएं",
+                           "te":  "Create Account",
+                           "en":  "Create Account",
+                           "ta":  "Create Account",
+                           "bn":  "অ্যাকাউন্ট তৈরি করুন"
+                       },
+    "mobile_number_invalid":  {
+                                  "hi":  "कृपया एक वैध 10 अंकों का मोबाइल नंबर दर्ज करें",
+                                  "te":  "Please enter a valid 10-digit mobile number",
+                                  "en":  "Please enter a valid 10-digit mobile number",
+                                  "ta":  "Please enter a valid 10-digit mobile number",
+                                  "bn":  "অনুগ্রহ করে একটি বৈধ 10-সংখ্যার মোবাইল নম্বর লিখুন"
+                              },
+    "passwords_not_match":  {
+                                "hi":  "पासवर्ड मेल नहीं खाते",
+                                "te":  "Passwords do not match",
+                                "en":  "Passwords do not match",
+                                "ta":  "Passwords do not match",
+                                "bn":  "পাসওয়ার্ড মিলছে না"
+                            },
+    "otp_invalid":  {
+                        "hi":  "कृपया एक वैध 6 अंकों का ओटीपी दर्ज करें",
+                        "te":  "Please enter a valid 6-digit OTP",
+                        "en":  "Please enter a valid 6-digit OTP",
+                        "ta":  "Please enter a valid 6-digit OTP",
+                        "bn":  "অনুগ্রহ করে একটি বৈধ 6-সংখ্যার ওটিপি লিখুন"
+                    },
+    "sign_in":  {
+                    "hi":  "साइन इन करें",
+                    "te":  "Sign In",
+                    "en":  "Sign In",
+                    "ta":  "Sign In",
+                    "bn":  "সাইন ইন করুন"
+                },
+    "i_buy_products":  {
+                           "hi":  "मैं उत्पाद खरीदता हूं",
+                           "te":  "I buy products",
+                           "en":  "I buy products",
+                           "ta":  "I buy products",
+                           "bn":  "আমি পণ্য কিনি"
+                       },
+    "language_preference":  {
+                                "hi":  "पसंदीदा भाषा",
+                                "te":  "Preferred Language",
+                                "en":  "Preferred Language",
+                                "ta":  "Preferred Language",
+                                "bn":  "পছন্দের ভাষা"
+                            },
+    "already_have_account":  {
+                                 "hi":  "पहले से खाता है?",
+                                 "te":  "Already have an account?",
+                                 "en":  "Already have an account?",
+                                 "ta":  "Already have an account?",
+                                 "bn":  "ইতিমধ্যে অ্যাকাউন্ট আছে?"
+                             },
+    "use_mobile_instead":  {
+                               "hi":  "इसके बजाय मोबाइल का उपयोग करें",
+                               "te":  "Use Mobile Instead",
+                               "en":  "Use Mobile Instead",
+                               "ta":  "Use Mobile Instead",
+                               "bn":  "পরিবর্তে মোবাইল ব্যবহার করুন"
+                           },
+    "register_here":  {
+                          "hi":  "यहां पंजीकरण करें",
+                          "te":  "Register here",
+                          "en":  "Register here",
+                          "ta":  "Register here",
+                          "bn":  "এখানে নিবন্ধন করুন"
+                      },
+    "otp_verification":  {
+                             "hi":  "ओटीपी सत्यापन",
+                             "te":  "OTP Verification",
+                             "en":  "OTP Verification",
+                             "ta":  "OTP Verification",
+                             "bn":  "ওটিপি যাচাইকরণ"
+                         },
+    "made_for_bharat":  {
+                            "hi":  "भारत के किसानों के लिए बनाया गया | AI द्वारा संचालित",
+                            "te":  "Made for Bharat Farmers | Powered by AI",
+                            "en":  "Made for Bharat Farmers | Powered by AI",
+                            "ta":  "Made for Bharat Farmers | Powered by AI",
+                            "bn":  "ভারতের কৃষকদের জন্য তৈরি | AI দ্বারা চালিত"
+                        },
+    "otp":  {
+                "hi":  "ओटीपी",
+                "te":  "OTP",
+                "en":  "OTP",
+                "ta":  "OTP",
+                "bn":  "ওটিপি"
+            },
+    "role_buyer":  {
+                       "hi":  "खरीदार",
+                       "te":  "Buyer",
+                       "en":  "Buyer",
+                       "ta":  "Buyer",
+                       "bn":  "ক্রেতা"
+                   },
+    "i_sell_products":  {
+                            "hi":  "मैं उत्पाद बेचता हूं",
+                            "te":  "I sell products",
+                            "en":  "I sell products",
+                            "ta":  "I sell products",
+                            "bn":  "আমি পণ্য বিক্রি করি"
+                        },
+    "dont_have_account":  {
+                              "hi":  "खाता नहीं है?",
+                              "te":  "Don\u0027t have an account?",
+                              "en":  "Don\u0027t have an account?",
+                              "ta":  "Don\u0027t have an account?",
+                              "bn":  "অ্যাকাউন্ট নেই?"
+                          },
+    "demo_mobile":  {
+                        "hi":  "मोबाइल: 9876543210",
+                        "te":  "Mobile: 9876543210",
+                        "en":  "Mobile: 9876543210",
+                        "ta":  "Mobile: 9876543210",
+                        "bn":  "মোবাইল: 9876543210"
+                    },
+    "auth_error_generic":  {
+                               "hi":  "प्रमाणीकरण विफल रहा। कृपया पुनः प्रयास करें।",
+                               "te":  "Authentication failed. Please try again.",
+                               "en":  "Authentication failed. Please try again.",
+                               "ta":  "Authentication failed. Please try again.",
+                               "bn":  "প্রমাণীকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।"
+                           },
+    "enter_otp_sent":  {
+                           "hi":  "अपने मोबाइल पर भेजा गया ओटीपी दर्ज करें",
+                           "te":  "Enter the OTP sent to your mobile",
+                           "en":  "Enter the OTP sent to your mobile",
+                           "ta":  "Enter the OTP sent to your mobile",
+                           "bn":  "আপনার মোবাইলে পাঠানো ওটিপি লিখুন"
+                       },
+    "role_vendor":  {
+                        "hi":  "विक्रेता",
+                        "te":  "Vendor",
+                        "en":  "Vendor",
+                        "ta":  "Vendor",
+                        "bn":  "বিক্রেতা"
+                    },
+    "name":  {
+                 "hi":  "पूरा नाम",
+                 "te":  "Full Name",
+                 "en":  "Full Name",
+                 "ta":  "Full Name",
+                 "bn":  "সম্পূর্ণ নাম"
+             },
+    "invalid_credentials":  {
+                                "hi":  "अमान्य ईमेल या पासवर्ड",
+                                "te":  "Invalid email or password",
+                                "en":  "Invalid email or password",
+                                "ta":  "Invalid email or password",
+                                "bn":  "অবৈধ ইমেল বা পাসওয়ার্ড"
+                            },
+    "resend_in":  {
+                      "hi":  "{{seconds}} सेकंड में फिर से भेजें",
+                      "te":  "Resend in {{seconds}}s",
+                      "en":  "Resend in {{seconds}}s",
+                      "ta":  "Resend in {{seconds}}s",
+                      "bn":  "{{seconds}} সেকেন্ডে পুনরায় পাঠান"
+                  },
+    "otp_expired":  {
+                        "hi":  "ओटीपी समाप्त हो गया है। कृपया नया अनुरोध करें।",
+                        "te":  "OTP has expired. Please request a new one.",
+                        "en":  "OTP has expired. Please request a new one.",
+                        "ta":  "OTP has expired. Please request a new one.",
+                        "bn":  "ওটিপি মেয়াদ শেষ হয়ে গেছে। অনুগ্রহ করে নতুন অনুরোধ করুন।"
+                    },
+    "demo_otp":  {
+                     "hi":  "ओटीपी: 123456",
+                     "te":  "OTP: 123456",
+                     "en":  "OTP: 123456",
+                     "ta":  "OTP: 123456",
+                     "bn":  "ওটিপি: 123456"
+                 },
+    "confirm_password":  {
+                             "hi":  "पासवर्ड की पुष्टि करें",
+                             "te":  "Confirm Password",
+                             "en":  "Confirm Password",
+                             "ta":  "Confirm Password",
+                             "bn":  "পাসওয়ার্ড নিশ্চিত করুন"
+                         }
+}
