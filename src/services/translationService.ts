@@ -133,7 +133,7 @@ export async function translate(text: string, targetLang: string): Promise<any> 
   return { translatedText: text, sourceLang: 'en', targetLang };
 }
 
-export function getMandiPhrase(id: string): any {
+export function getMandiPhrase(_id: string): any {
   return null;
 }
 

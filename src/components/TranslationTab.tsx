@@ -6,7 +6,6 @@
 
 import { useState, useEffect } from 'react';
 import { Language, MandiPhrase } from '../types';
-import { LanguageSelector } from './LanguageSelector';
 import { TextInput } from './TextInput';
 import { TranslateButton } from './TranslateButton';
 import { TranslationOutput } from './TranslationOutput';
@@ -16,7 +15,7 @@ import { translate, saveToHistory, getHistory } from '../services/translationSer
 
 export function TranslationTab() {
   // State management
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>('hi');
+  const [selectedLanguage, _setSelectedLanguage] = useState<Language>('hi');
   const [inputText, setInputText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
   const [error, setError] = useState('');
@@ -91,12 +90,6 @@ export function TranslationTab() {
     }
   };
 
-  // Handle language change
-  const handleLanguageChange = (language: Language) => {
-    setSelectedLanguage(language);
-    // Clear translation when language changes
-    setTranslatedText('');
-  };
 
   // Handle Enter key in textarea (Ctrl+Enter to translate)
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -108,12 +101,6 @@ export function TranslationTab() {
 
   return (
     <div className="space-y-8">
-      {/* Language Selector */}
-      <LanguageSelector
-        selectedLanguage={selectedLanguage}
-        onLanguageChange={handleLanguageChange}
-      />
-
       {/* Translation Input/Output Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Section */}

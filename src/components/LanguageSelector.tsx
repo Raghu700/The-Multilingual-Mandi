@@ -7,14 +7,10 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Language } from '../types';
 
 interface LanguageSelectorProps {
-  position?: 'top' | 'inline';
-  showLabel?: boolean;
   className?: string;
 }
 
 export function LanguageSelector({ 
-  position = 'top', 
-  showLabel = true,
   className = ''
 }: LanguageSelectorProps) {
   const { language, setLanguage, t } = useLanguage();
