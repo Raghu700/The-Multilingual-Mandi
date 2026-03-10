@@ -5,12 +5,13 @@
  */
 
 import { useState, useEffect } from 'react';
-import { TrendingUp, BarChart3, Sparkles, Users } from 'lucide-react';
+import { TrendingUp, BarChart3, Sparkles, Users, Camera } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PriceDiscoveryTab } from './PriceDiscoveryTab';
 import { PriceAnalysisTab } from './PriceAnalysisTab';
 import { SmartMatchTab } from './SmartMatchTab';
 import { NegotiationTab } from './NegotiationTab';
+import { CropGradingDemo } from './CropGradingDemo';
 
 interface TabNavigationProps {
   externalActiveTab?: string;
@@ -35,6 +36,7 @@ export function TabNavigation({ externalActiveTab, onTabChange }: TabNavigationP
     'price-analysis': { en: 'Analysis', hi: 'विश्लेषण', te: 'విశ్లేషణ', ta: 'பகுப்பாய்வு', bn: 'বিশ্লেষণ' },
     'smart-match': { en: 'Smart Match', hi: 'स्मार्ट मैच', te: 'స్మార్ట్ మ్యాచ్', ta: 'ஸ்மார்ட் மேட்ச்', bn: 'স্মার্ট ম্যাচ' },
     'negotiation': { en: 'Negotiate', hi: 'बातचीत', te: 'చర్చ', ta: 'பேச்சு', bn: 'আলোচনা' },
+    'crop-grading': { en: 'Crop Grade', hi: 'फसल ग्रेड', te: 'పంట గ్రేడ్', ta: 'பயிர் தரம்', bn: 'ফসল গ্রেড' },
   };
 
   const tabs = [
@@ -42,6 +44,7 @@ export function TabNavigation({ externalActiveTab, onTabChange }: TabNavigationP
     { id: 'price-analysis', icon: BarChart3 },
     { id: 'smart-match', icon: Sparkles },
     { id: 'negotiation', icon: Users },
+    { id: 'crop-grading', icon: Camera },
   ];
 
   return (
@@ -83,6 +86,7 @@ export function TabNavigation({ externalActiveTab, onTabChange }: TabNavigationP
         {activeTab === 'price-analysis' && <PriceAnalysisTab />}
         {activeTab === 'smart-match' && <SmartMatchTab />}
         {activeTab === 'negotiation' && <NegotiationTab />}
+        {activeTab === 'crop-grading' && <CropGradingDemo />}
       </div>
     </div>
   );

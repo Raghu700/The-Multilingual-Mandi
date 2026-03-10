@@ -12,7 +12,7 @@ This implementation plan transforms the existing email-based authentication into
     - Include all UI strings: labels, buttons, placeholders, error messages, helper text
     - _Requirements: 1.3, 1.7_
   
-  - [~] 1.2 Implement TranslationService with localStorage caching
+  - [ ] 1.2 Implement TranslationService with localStorage caching
     - Update `src/services/translationService.ts` to implement caching logic
     - Add methods: `loadTranslations()`, `getTranslation()`, `updateCache()`, `isAvailableOffline()`
     - Implement version-based cache invalidation
@@ -31,7 +31,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 12.6_
 
 - [ ] 2. Update LanguageContext with persistence and translation integration
-  - [~] 2.1 Enhance LanguageContext with localStorage persistence
+  - [ ] 2.1 Enhance LanguageContext with localStorage persistence
     - Update `src/contexts/LanguageContext.tsx` to persist language selection
     - Add translation function `t(key, params)` to context
     - Load initial language from localStorage on mount
@@ -57,7 +57,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 12.2_
 
 - [ ] 3. Create LanguageSelector component
-  - [~] 3.1 Implement LanguageSelector component
+  - [ ] 3.1 Implement LanguageSelector component
     - Create `src/components/LanguageSelector.tsx` with dropdown UI
     - Support 4 languages: English, Hindi (हिंदी), Bengali (বাংলা), Marathi (मराठी)
     - Display language names in native scripts
@@ -72,7 +72,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 1.1, 1.2, 10.1_
 
 - [ ] 4. Implement OTP service with mock implementation
-  - [~] 4.1 Create OTPService interface and mock implementation
+  - [ ] 4.1 Create OTPService interface and mock implementation
     - Create `src/services/otpService.ts` with MockOTPService class
     - Implement methods: `sendOTP()`, `verifyOTP()`, `resendOTP()`
     - Use fixed OTP '123456' for demo
@@ -99,14 +99,14 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 2.5, 2.7_
 
 - [ ] 5. Create validation utilities and InputValidator component
-  - [~] 5.1 Implement validation utilities
+  - [ ] 5.1 Implement validation utilities
     - Create `src/utils/validation.ts` with validation functions
     - Add `validateMobileNumber()` - 10 digits starting with 6-9
     - Add `validateOTP()` - exactly 6 digits
     - Add `validateEmail()` for fallback auth
     - _Requirements: 2.3, 2.4, 4.4, 4.5_
   
-  - [~] 5.2 Create InputValidator component with debouncing
+  - [ ] 5.2 Create InputValidator component with debouncing
     - Create `src/components/InputValidator.tsx` with render props pattern
     - Implement 300ms debounce for validation
     - Provide visual feedback: green border + checkmark for valid, red border + error for invalid
@@ -141,7 +141,7 @@ This implementation plan transforms the existing email-based authentication into
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Create MobileAuthForm component
-  - [~] 7.1 Implement MobileAuthForm component
+  - [ ] 7.1 Implement MobileAuthForm component
     - Create `src/components/MobileAuthForm.tsx` for mobile + OTP authentication
     - Add mobile number input with validation and audio hint button
     - Add OTP input field (appears after mobile verification)
@@ -181,13 +181,13 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
 - [ ] 9. Set up audio infrastructure with IndexedDB caching
-  - [~] 9.1 Create audio files directory structure
+  - [ ] 9.1 Create audio files directory structure
     - Create `/public/audio/` directory with subdirectories for each language
     - Create placeholder audio files for: mobile_number, otp, email, password, name
     - Structure: `/public/audio/{language}/{fieldId}.mp3`
     - _Requirements: 3.3, 3.7_
   
-  - [~] 9.2 Implement AudioService with IndexedDB caching
+  - [ ] 9.2 Implement AudioService with IndexedDB caching
     - Create `src/services/audioService.ts` with AudioServiceImpl class
     - Implement IndexedDB initialization for audio cache
     - Add methods: `playHint()`, `preloadAudio()`, `isCached()`
@@ -214,7 +214,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 3.2, 3.4, 3.7_
 
 - [ ] 10. Create AudioHintPlayer component
-  - [~] 10.1 Implement AudioHintPlayer component
+  - [ ] 10.1 Implement AudioHintPlayer component
     - Create `src/components/AudioHintPlayer.tsx` with 🔊 icon button
     - Integrate with AudioService for playback
     - Show animated icon during playback
@@ -230,7 +230,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 3.1, 3.2, 3.5, 10.1_
 
 - [ ] 11. Create VoiceGuideButton component
-  - [~] 11.1 Implement VoiceGuideButton component
+  - [ ] 11.1 Implement VoiceGuideButton component
     - Create `src/components/VoiceGuideButton.tsx` for step-by-step walkthrough
     - Add "🎙️ Voice Guide" button (min 48px height)
     - Implement step-by-step audio playthrough with element highlighting
@@ -256,7 +256,7 @@ This implementation plan transforms the existing email-based authentication into
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 13. Update AuthContext for mobile authentication
-  - [~] 13.1 Enhance AuthContext to support mobile authentication
+  - [ ] 13.1 Enhance AuthContext to support mobile authentication
     - Update `src/contexts/AuthContext.tsx` to handle mobile-based users
     - Add support for demo user sessions with 24-hour expiration
     - Update User type to include optional mobile field
@@ -270,7 +270,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 2.7, 6.7_
 
 - [ ] 14. Update authService for mobile and demo authentication
-  - [~] 14.1 Enhance authService with mobile authentication
+  - [ ] 14.1 Enhance authService with mobile authentication
     - Update `src/services/authService.ts` to support mobile + OTP login
     - Add `loginWithMobile()` function
     - Add `registerWithMobile()` function
@@ -285,7 +285,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 2.7, 6.3, 6.7_
 
 - [ ] 15. Create OfflineContext for offline capability
-  - [~] 15.1 Implement OfflineContext
+  - [ ] 15.1 Implement OfflineContext
     - Create `src/contexts/OfflineContext.tsx` for offline state management
     - Monitor online/offline status using navigator.onLine
     - Implement operation queue for offline requests
@@ -335,7 +335,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 2.1, 2.8, 2.9, 6.1, 7.1_
 
 - [ ] 17. Redesign Register component with mobile-first approach
-  - [~] 17.1 Update Register.tsx with mobile authentication
+  - [ ] 17.1 Update Register.tsx with mobile authentication
     - Update `src/components/Register.tsx` to use MobileAuthForm
     - Add LanguageSelector at top
     - Add language preference selector in registration form
@@ -353,14 +353,14 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 2.1, 3.1_
 
 - [ ] 18. Add culturally relevant visual design elements
-  - [~] 18.1 Create and optimize background images
+  - [ ] 18.1 Create and optimize background images
     - Create 3-5 background images showing mandi scenes, baskets, crops
     - Optimize images to max 200KB each
     - Implement image rotation logic
     - Add images to `/public/images/backgrounds/`
     - _Requirements: 8.1, 8.2, 8.7_
   
-  - [~] 18.2 Update theme with Indian tricolor elements
+  - [ ] 18.2 Update theme with Indian tricolor elements
     - Update Tailwind config with saffron (#f97316), white, green (#10b981) theme
     - Add emoji icons throughout UI (📱, 🔒, 👨‍🌾, 🎯, 🌐, 🔊, 🎙️)
     - Update EktaMandi logo to include Hindi text
@@ -379,7 +379,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 8.7_
 
 - [ ] 19. Implement accessibility enhancements
-  - [~] 19.1 Add ARIA labels and semantic HTML
+  - [ ] 19.1 Add ARIA labels and semantic HTML
     - Add aria-label to all interactive elements
     - Use semantic HTML (button, input, label) throughout
     - Add aria-live regions for validation errors
@@ -419,7 +419,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 5.6_
 
 - [ ] 20. Add progress indicators and visual hierarchy
-  - [~] 20.1 Implement progress indicator for multi-step auth
+  - [ ] 20.1 Implement progress indicator for multi-step auth
     - Create progress indicator component for mobile → OTP flow
     - Update indicator as user progresses through steps
     - Use visual hierarchy (size, color, spacing) for emphasis
@@ -440,7 +440,7 @@ This implementation plan transforms the existing email-based authentication into
     - _Requirements: 11.6_
 
 - [ ] 21. Implement responsive design and performance optimizations
-  - [~] 21.1 Add responsive CSS and media queries
+  - [ ] 21.1 Add responsive CSS and media queries
     - Add CSS media queries for mobile (320px-480px), tablet (768px+), desktop
     - Implement responsive font sizes (14px-18px)
     - Ensure vertical stacking on mobile
@@ -463,7 +463,7 @@ This implementation plan transforms the existing email-based authentication into
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 23. Create custom test generators for property-based tests
-  - [~] 23.1 Implement custom generators
+  - [ ] 23.1 Implement custom generators
     - Create `src/test/generators/userGenerators.ts`
     - Add generators: languageArb, mobileNumberArb, invalidMobileNumberArb, otpArb, userArb
     - Create `src/test/generators/validationGenerators.ts`
@@ -538,7 +538,7 @@ This implementation plan transforms the existing email-based authentication into
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 28. Update documentation and create demo content
-  - [~] 28.1 Update README with new authentication features
+  - [ ] 28.1 Update README with new authentication features
     - Document mobile OTP authentication
     - Document multilingual support
     - Document audio hints and voice walkthrough
@@ -546,13 +546,13 @@ This implementation plan transforms the existing email-based authentication into
     - Add screenshots of new UI
     - _Requirements: All_
   
-  - [~] 28.2 Create demo audio files
+  - [ ] 28.2 Create demo audio files
     - Record or generate audio hints for all fields in all 4 languages
     - Record voice walkthrough audio in all 4 languages
     - Optimize audio files for web delivery
     - _Requirements: 3.2, 3.3, 7.2_
   
-  - [~] 28.3 Add culturally relevant background images
+  - [ ] 28.3 Add culturally relevant background images
     - Source or create 3-5 mandi scene images
     - Optimize to max 200KB each
     - Add to project
