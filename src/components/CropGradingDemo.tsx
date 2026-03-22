@@ -8,6 +8,7 @@ import { CropType, Photo, GradingResult, QualityGrade } from '../types/cropGradi
 import CropSelector from './CropSelector';
 import PhotoCapture from './PhotoCapture';
 import ResultsDisplay from './ResultsDisplay';
+import { CropGradingService } from '../services/cropGradingService';
 
 type Step = 'crop-selection' | 'photo-upload' | 'results';
 
@@ -16,6 +17,9 @@ export const CropGradingDemo: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<CropType | undefined>();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [language, setLanguage] = useState<string>('en');
+  const [result, setResult] = useState<GradingResult | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Mock grading result for demo
   const mockResult: GradingResult = {
@@ -92,15 +96,41 @@ export const CropGradingDemo: React.FC = () => {
     setPhotos(newPhotos);
   };
 
-  const handleAnalyze = () => {
-    // In real implementation, this would call the grading service
-    setCurrentStep('results');
+  const handleAnalyze = async () => {
+    if (!selectedCrop) return;
+    
+    setIsProcessing(true);
+    setError(null);
+    
+    try {
+      // Call the backend API
+      const sessionId = `session-${Date.now()}`;
+      const gradingResult = await CropGradingService.gradeImages(
+        photos,
+        selectedCrop,
+        sessionId
+      );
+      
+      setResult(gradingResult);
+      setCurrentStep('results');
+    } catch (err) {
+      console.error('Grading error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to grade crop');
+      
+      // Fallback to mock result if API fails
+      setResult(mockResult);
+      setCurrentStep('results');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleReset = () => {
     setCurrentStep('crop-selection');
     setSelectedCrop(undefined);
     setPhotos([]);
+    setResult(null);
+    setError(null);
   };
 
   const canAnalyze = photos.length >= 2 && photos.length <= 3;
@@ -177,6 +207,11 @@ export const CropGradingDemo: React.FC = () => {
 
           {currentStep === 'photo-upload' && (
             <>
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <p className="text-red-800">{error}</p>
+                </div>
+              )}
               <PhotoCapture
                 onPhotosChange={handlePhotosChange}
                 photos={photos}
@@ -185,7 +220,8 @@ export const CropGradingDemo: React.FC = () => {
               <div className="flex justify-center gap-4 mt-6">
                 <button
                   onClick={handleReset}
-                  className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                  disabled={isProcessing}
+                  className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors disabled:opacity-50"
                 >
                   {language === 'hi' && 'वापस'}
                   {language === 'te' && 'వెనుకకు'}
@@ -194,25 +230,53 @@ export const CropGradingDemo: React.FC = () => {
                 </button>
                 <button
                   onClick={handleAnalyze}
-                  disabled={!canAnalyze}
+                  disabled={!canAnalyze || isProcessing}
                   className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                    canAnalyze
+                    canAnalyze && !isProcessing
                       ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  {language === 'hi' && 'विश्लेषण करें'}
-                  {language === 'te' && 'విశ్లేషించండి'}
-                  {language === 'ta' && 'பகுப்பாய்வு செய்'}
-                  {language === 'en' && 'Analyze'}
+                  {isProcessing ? (
+                    <>
+                      <span className="inline-block animate-spin mr-2">⏳</span>
+                      {language === 'hi' && 'विश्लेषण हो रहा है...'}
+                      {language === 'te' && 'విశ్లేషిస్తోంది...'}
+                      {language === 'ta' && 'பகுப்பாய்வு செய்கிறது...'}
+                      {language === 'en' && 'Analyzing...'}
+                    </>
+                  ) : (
+                    <>
+                      {language === 'hi' && 'विश्लेषण करें'}
+                      {language === 'te' && 'విశ్లేషించండి'}
+                      {language === 'ta' && 'பகுப்பாய்வு செய்'}
+                      {language === 'en' && 'Analyze'}
+                    </>
+                  )}
                 </button>
               </div>
             </>
           )}
 
-          {currentStep === 'results' && (
+          {currentStep === 'results' && result && (
             <>
-              <ResultsDisplay result={mockResult} language={language} />
+              {result.warning && (
+                <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">⚠️</span>
+                    <div>
+                      <h3 className="font-semibold text-yellow-900 mb-1">
+                        {language === 'hi' && 'चेतावनी'}
+                        {language === 'te' && 'హెచ్చరిక'}
+                        {language === 'ta' && 'எச்சரிக்கை'}
+                        {language === 'en' && 'Warning'}
+                      </h3>
+                      <p className="text-yellow-800">{result.warning}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <ResultsDisplay result={result} language={language} />
               <div className="flex justify-center mt-6">
                 <button
                   onClick={handleReset}

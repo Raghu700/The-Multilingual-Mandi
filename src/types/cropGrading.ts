@@ -247,6 +247,7 @@ export interface GradingResult {
   timestamp: Date;
   seasonalAdjustment?: string;
   regionalAdjustment?: string;
+  warning?: string; // Warning message if crop match is low
 }
 
 // Feedback data (Requirements 14.1-14.5)

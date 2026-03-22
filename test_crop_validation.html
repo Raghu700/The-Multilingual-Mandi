@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Type Validation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(to bottom, #f0fdf4, #ffffff);
+        }
+        h1 {
+            color: #166534;
+            text-align: center;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #374151;
+        }
+        select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #16a34a;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #15803d;
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.success {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            display: block;
+        }
+        .result.warning {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            display: block;
+        }
+        .result h3 {
+            margin-top: 0;
+        }
+        .grade {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .grade.A { color: #16a34a; }
+        .grade.B { color: #f59e0b; }
+        .grade.C { color: #ef4444; }
+        .details {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
+            margin: 20px 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌾 Crop Type Validation Test</h1>
+    
+    <div class="info">
+        <strong>Test Purpose:</strong> Verify that the system correctly validates uploaded images against selected crop types.
+        <br><br>
+        <strong>Expected Behavior:</strong>
+        <ul>
+            <li>✅ Correct crop → Normal grading (A/B/C based on quality)</li>
+            <li>⚠️ Wrong crop → Grade C + warning message</li>
+            <li>⚠️ Non-crop object → Grade C + multiple warnings</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Upload Test Image</h2>
+        
+        <div class="form-group">
+            <label for="cropType">Select Crop Type:</label>
+            <select id="cropType">
+                <option value="tomato">Tomato</option>
+                <option value="onion">Onion</option>
+                <option value="potato">Potato</option>
+                <option value="wheat">Wheat</option>
+                <option value="rice">Rice</option>
+                <option value="chilli">Chilli</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="imageFile">Upload Image:</label>
+            <input type="file" id="imageFile" accept="image/*">
+        </div>
+
+        <button id="testBtn" onclick="testValidation()">Test Validation</button>
+    </div>
+
+    <div class="loading" id="loading">
+        <p>⏳ Processing image...</p>
+    </div>
+
+    <div class="result" id="result">
+        <h3 id="resultTitle">Result</h3>
+        <div class="grade" id="gradeDisplay"></div>
+        <div id="resultContent"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8003/api/v1';
+
+        async function testValidation() {
+            const cropType = document.getElementById('cropType').value;
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select an image file');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('testBtn').disabled = true;
+
+            try {
+                // Create form data
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('cropType', cropType);
+
+                // Call API
+                const response = await fetch(`${API_URL}/quality-grade`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // Display result
+                displayResult(result, cropType);
+
+            } catch (error) {
+                displayError(error);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('testBtn').disabled = false;
+            }
+        }
+
+        function displayResult(result, selectedCrop) {
+            const resultDiv = document.getElementById('result');
+            const resultTitle = document.getElementById('resultTitle');
+            const gradeDisplay = document.getElementById('gradeDisplay');
+            const resultContent = document.getElementById('resultContent');
+
+            // Determine result type
+            let resultClass = 'success';
+            if (result.warnings && result.warnings.length > 0) {
+                resultClass = 'warning';
+            }
+            if (result.grade === 'C' && result.gradeConfidence < 50) {
+                resultClass = 'warning';
+            }
+
+            resultDiv.className = `result ${resultClass}`;
+            resultDiv.style.display = 'block';
+
+            // Set title
+            if (resultClass === 'warning') {
+                resultTitle.textContent = '⚠️ Validation Warning';
+            } else {
+                resultTitle.textContent = '✅ Validation Passed';
+            }
+
+            // Display grade
+            gradeDisplay.textContent = `Grade ${result.grade}`;
+            gradeDisplay.className = `grade ${result.grade}`;
+
+            // Build content
+            let content = `
+                <div class="details">
+                    <strong>Selected Crop:</strong> ${selectedCrop}<br>
+                    <strong>Detected Crop:</strong> ${result.cropType || 'N/A'}<br>
+                    <strong>Confidence:</strong> ${result.gradeConfidence.toFixed(1)}%<br>
+                    <strong>Defect Severity:</strong> ${result.defectSeverity}<br>
+                    <strong>Freshness:</strong> ${result.freshness}<br>
+                    <strong>Marketability:</strong> ${result.marketability}<br>
+                    <strong>Processing Time:</strong> ${result.processingTimeMs.toFixed(0)}ms
+                </div>
+            `;
+
+            // Display warnings
+            if (result.warnings && result.warnings.length > 0) {
+                content += '<div class="warning-box">';
+                content += '<strong>⚠️ Warnings:</strong><ul>';
+                result.warnings.forEach(warning => {
+                    content += `<li>${warning}</li>`;
+                });
+                content += '</ul></div>';
+            }
+
+            // Display explanation
+            if (result.explanation) {
+                content += `
+                    <div class="details">
+                        <strong>Explanation:</strong><br>
+                        ${result.explanation.summary}
+                    </div>
+                `;
+            }
+
+            // Display segmentation info
+            if (result.segmentation) {
+                content += `
+                    <div class="details">
+                        <strong>Segmentation:</strong><br>
+                        Detected: ${result.segmentation.detected ? 'Yes' : 'No'}<br>
+                        Confidence: ${(result.segmentation.confidence * 100).toFixed(1)}%<br>
+                        ${result.segmentation.bbox ? `BBox: [${result.segmentation.bbox.join(', ')}]` : ''}
+                    </div>
+                `;
+            }
+
+            resultContent.innerHTML = content;
+        }
+
+        function displayError(error) {
+            const resultDiv = document.getElementById('result');
+            const resultTitle = document.getElementById('resultTitle');
+            const gradeDisplay = document.getElementById('gradeDisplay');
+            const resultContent = document.getElementById('resultContent');
+
+            resultDiv.className = 'result error';
+            resultDiv.style.display = 'block';
+            resultTitle.textContent = '❌ Error';
+            gradeDisplay.textContent = '';
+            resultContent.innerHTML = `
+                <div class="warning-box">
+                    <strong>Error:</strong> ${error.message || 'Failed to process image'}
+                </div>
+            `;
+        }
+
+        // Check backend health on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const health = await response.json();
+                
+                if (health.status !== 'healthy') {
+                    alert('⚠️ Backend is not healthy. Please start the backend first.');
+                }
+            } catch (error) {
+                alert('❌ Cannot connect to backend. Please ensure it is running on port 8003.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Grading Agent - Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #27ae60;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #229954;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .grade {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .grade.A { color: #27ae60; }
+        .grade.B { color: #f39c12; }
+        .grade.C { color: #e74c3c; }
+        .info {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .loading.show {
+            display: block;
+        }
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 Quality Grading Agent - Test</h1>
+        
+        <div class="form-group">
+            <label for="cropType">Select Crop Type:</label>
+            <select id="cropType">
+                <option value="tomato">🍅 Tomato</option>
+                <option value="onion">🧅 Onion</option>
+                <option value="potato">🥔 Potato</option>
+                <option value="wheat">🌾 Wheat</option>
+                <option value="rice">🍚 Rice</option>
+                <option value="chilli">🌶️ Chilli</option>
+                <option value="cardamom">Cardamom</option>
+                <option value="cotton">Cotton</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="imageFile">Upload Crop Image:</label>
+            <input type="file" id="imageFile" accept="image/*">
+        </div>
+        
+        <button id="gradeBtn" onclick="gradeImage()">Analyze Quality</button>
+        
+        <div class="loading" id="loading">
+            <p>⏳ Processing image with YOLO + EfficientNet...</p>
+            <p>This may take 5-10 seconds...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="result" id="result">
+            <h2>Grading Results</h2>
+            <div class="grade" id="grade"></div>
+            <div class="info">
+                <strong>Confidence:</strong> <span id="confidence"></span>
+            </div>
+            <div class="info">
+                <strong>Defect Severity:</strong> <span id="defects"></span>
+            </div>
+            <div class="info">
+                <strong>Freshness:</strong> <span id="freshness"></span>
+            </div>
+            <div class="info">
+                <strong>Marketability:</strong> <span id="marketability"></span>
+            </div>
+            <div class="info">
+                <strong>Processing Time:</strong> <span id="processingTime"></span>
+            </div>
+            <div class="info">
+                <strong>Segmentation:</strong> <span id="segmentation"></span>
+            </div>
+            <div class="info" id="explanationDiv">
+                <strong>Explanation:</strong><br>
+                <span id="explanation"></span>
+            </div>
+            <div class="info" id="warningsDiv" style="display:none; background:#fff3cd;">
+                <strong>⚠️ Warnings:</strong><br>
+                <span id="warnings"></span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8003/api/v1';
+        
+        async function gradeImage() {
+            const cropType = document.getElementById('cropType').value;
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('Please select an image file');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+            document.getElementById('gradeBtn').disabled = true;
+            
+            try {
+                // Create form data
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('cropType', cropType);
+                
+                // Make API request
+                const response = await fetch(`${API_URL}/quality-grade`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || error.detail || 'Failed to grade image');
+                }
+                
+                const result = await response.json();
+                displayResult(result);
+                
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('gradeBtn').disabled = false;
+            }
+        }
+        
+        function displayResult(result) {
+            document.getElementById('result').classList.add('show');
+            
+            // Grade
+            const gradeEl = document.getElementById('grade');
+            gradeEl.textContent = `Grade ${result.grade}`;
+            gradeEl.className = `grade ${result.grade}`;
+            
+            // Details
+            document.getElementById('confidence').textContent = `${(result.gradeConfidence * 100).toFixed(1)}%`;
+            document.getElementById('defects').textContent = result.defectSeverity;
+            document.getElementById('freshness').textContent = result.freshness;
+            document.getElementById('marketability').textContent = result.marketability;
+            document.getElementById('processingTime').textContent = `${result.processingTimeMs.toFixed(0)}ms`;
+            
+            // Segmentation
+            const seg = result.segmentation;
+            document.getElementById('segmentation').textContent = 
+                seg.detected ? 
+                `✅ Detected (${(seg.confidence * 100).toFixed(1)}% confidence)` : 
+                '❌ Not detected';
+            
+            // Explanation
+            if (result.explanation) {
+                document.getElementById('explanation').innerHTML = 
+                    `<p>${result.explanation.summary}</p>` +
+                    `<ul>${result.explanation.factors.map(f => `<li>${f}</li>`).join('')}</ul>`;
+            }
+            
+            // Warnings
+            if (result.warnings && result.warnings.length > 0) {
+                document.getElementById('warningsDiv').style.display = 'block';
+                document.getElementById('warnings').innerHTML = 
+                    result.warnings.map(w => `<p>• ${w}</p>`).join('');
+            } else {
+                document.getElementById('warningsDiv').style.display = 'none';
+            }
+        }
+        
+        function showError(message) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = `Error: ${message}`;
+            errorEl.classList.add('show');
+        }
+        
+        // Check health on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                console.log('Backend health:', data);
+                if (!data.modelsLoaded?.yolo || !data.modelsLoaded?.efficientnet) {
+                    showError('Models not loaded. Please wait for backend to initialize.');
+                }
+            } catch (error) {
+                showError('Backend not available. Please start the Quality Grading Agent.');
+            }
+        });
+    </script>
+</body>
+</html>
